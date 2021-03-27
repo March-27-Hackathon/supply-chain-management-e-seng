@@ -26,6 +26,7 @@ public class Manager{
         reset();
     }
 
+
     /**
      * Resets the Manager instance, removing previous history.
      */
@@ -39,6 +40,7 @@ public class Manager{
         totalPrice = 0;
     }
 
+
     /**
      * Save the order with the cheapest necessary items within the database to
      * a .text file.
@@ -49,7 +51,8 @@ public class Manager{
      */
     private void saveOrder(){
     }
-    
+
+
     /**
      * Finds the cheapest desired item and return all relevent IDs.
      *
