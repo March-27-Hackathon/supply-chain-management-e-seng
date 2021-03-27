@@ -85,21 +85,6 @@ public class Manager{
 
 
     /**
-     * Collects all relevant parts from the database.
-     *
-     * @param itemType The specific type of item that is desired.
-     *  - This word should be contained within the "type" field within each
-     *    table.
-     * @param itemCategory The overall category that the item falls under.
-     *  - This should be one of the tables in the database.
-     *
-     * @return A String array with all relevant part IDs, may be empty
-     */
-    private String getAllParts(String itemType, String itemCategory){
-    }
-
-
-    /**
      * Gets the total cost of all items within the given array of IDs.
      *
      * @param ids The array of ids to get prices from.
