@@ -10,6 +10,7 @@ package edu.ucalgary.ensf409;
 public class Manager{
     private final SQLAccess databaseAccess;
     private final FileIO orderPrinter;
+    private final orderedParts;
 
     public Manager(){
         this.databaseAccess = new SQLAccess();
@@ -45,20 +46,15 @@ public class Manager{
      *  @param itemType The specific type of the item that is desired.
      *   - This word should be contained within the "type" field within each
      *     table.
-     *  @param usedIDs All ids that were used previously.
-     *   - These IDs should be ignored when determining the cheapest set,
-     *     mostly to prevent duplicates.
      *  
      *  eg. if the query is: <code>mesh chair, 2</code>
-     *  This method should be called twice:
-     *  1st: <code>findCheapestCombination("chair", "mesh", new String[])</code>
-     *  2nd: <code>findCheapestCombination("chair", "mest", [&lt;part1&gt;, &lt;part2&gt;,...])</code>
+     *  This method should be called twice.
      *
      * @throws IllegalArgumentException Thrown if item cannot be found within
      * database.
      *
      * @return A String array containing all ordered parts for the request.
      */
-    public String[] findCheapestItems(String itemCategory, String itemType){
+    private String[] findCheapestItems(String itemCategory, String itemType){
     }
 }
