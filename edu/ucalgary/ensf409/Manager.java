@@ -113,4 +113,10 @@ public class Manager{
     public void confirmOrder(){
         saveOrder();
     }
+
+    /**
+     * Purchases the items and removes the items from the database.
+     * A purchased item has no need to be in the database anymore.
+     */
+    private void purchaseItems(){}
 }
