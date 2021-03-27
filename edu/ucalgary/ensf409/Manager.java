@@ -73,9 +73,9 @@ public class Manager{
      *     table.
      *  @param itemCategory The overall category that the item falls under.
      *   - This should be one of the tables in the Database.
-     *  
-     *  eg. if the query is: <code>mesh chair, 2</code>
-     *  This method should be called twice.
+     *
+     *  eg. if the query is: <code>mesh chair, 2</code>,
+     *  this method should be called twice.
      *
      * @return A String array containing all ordered parts for the request.
      */
