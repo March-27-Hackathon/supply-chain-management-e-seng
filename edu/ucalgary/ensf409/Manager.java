@@ -19,7 +19,10 @@ public class Manager{
         reset();
     }
 
-    private reset(){
+    /**
+     * Resets the Manager instance, removing previous history.
+     */
+    private void reset(){
         if(databaseAccess != null){
             databaseAccess.close();
         }
