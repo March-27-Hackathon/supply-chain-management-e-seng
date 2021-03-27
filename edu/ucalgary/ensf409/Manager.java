@@ -100,7 +100,9 @@ public class Manager{
      *
      * @param order The order that the user is trying to make
      *
-     * @return -1.00 if the order cannot be completed, the price otherwise.
+     * @return -1.00 if the item does not exist,
+     *         -2.00 if the item exists but cannot be made,
+     *         the price otherwise.
      */
     public double parseOrder(String itemType, String itemCategory, int quantity){
         // Check if the inputs are valid.
