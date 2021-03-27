@@ -2,7 +2,7 @@
  * @author Liana Goodman
  * @author Ethan Sengsavang
  * @author Amir Abdrakmanov
- * @version 1.5
+ * @version 1.7
  * @since 1.0
  */
 
@@ -17,6 +17,28 @@ public class SQLAccess {
     private final String DBURL;
     private Connection dbConnection;
     private ResultSet results;
+    private Statement statement;
+
+    /**
+     * main used only for debugging purposes
+     * @param args command line args.
+     */
+    public static void main (String [] args) {
+        SQLAccess access = new SQLAccess("ensf409", "ensf409", "jdbc:mysql://localhost/INVENTORY");
+
+        boolean success = access.removeFurniture("LAMP", "L013"); // WORK FINE
+        System.out.println(success);
+
+        success = access.removeFurniture("LAMP", "L015"); // returns false
+        System.out.println(success);
+
+        String [] fields = access.getFields("LAMP");
+        for (String item:fields) {
+            System.out.println(item);
+        }
+
+        access.close();
+    }
 
     /**
      * Constructor for SQLAccess to initialize server and database information
@@ -37,7 +59,8 @@ public class SQLAccess {
      */
     private void initializeConnection () {
         try{
-            dbConnection = DriverManager.getConnection(this.DBURL, this.USERNAME, this.PASSWORD);
+            this.dbConnection = DriverManager.getConnection(this.DBURL, this.USERNAME, this.PASSWORD);
+            this.statement = dbConnection.createStatement();
         } catch (SQLException e) {
             System.out.println("SQL connection failed.");
             e.printStackTrace();
@@ -55,7 +78,10 @@ public class SQLAccess {
     private void close () {
         try {
             this.dbConnection.close();
-            this.results.close();
+            if (this.results != null) {
+                this.results.close();
+            }
+            this.statement.close();
         } catch (SQLException e) {
             System.out.println("Error while closing database connection and result set");
             e.printStackTrace();
@@ -75,11 +101,10 @@ public class SQLAccess {
      */
     public boolean removeFurniture (String table, String id) {
         try {
-            String query = "DELETE FROM ? WHERE id = ?";    // set up query
+            String query = "DELETE FROM " + table + " WHERE id = \'" + id + "\'";    // set up query
             PreparedStatement delStmnt = dbConnection.prepareStatement(query);
 
-            delStmnt.setString(1, table);   // insert specific table
-            delStmnt.setString(2, id);      // insert id to be removed
+            // delStmnt.setString(1, id);      // insert id to be removed
 
             int rows = delStmnt.executeUpdate();    // update the table
 
@@ -131,11 +156,9 @@ public class SQLAccess {
 
             return fields;
         } catch (SQLException e) {
-            System.out.println("Error retrieving fields.");
             e.printStackTrace();
             System.exit(1);
         } catch (Exception ex) {
-            System.out.println("Unknonw error retrieving fields.");
             ex.printStackTrace();
             System.exit(1);
         }
@@ -150,12 +173,15 @@ public class SQLAccess {
      */
     public ResultSet getTableInformation (String table) {
         try {
-            String query = "SELECT * FROM " + table; // set query with proper table
 
-            Statement statement = dbConnection.createStatement();   // get all data from the table
+            String query = "SELECT * FROM " + table; // set query with proper table
+            System.out.println("Query:\t" + query);
+
             this.results = statement.executeQuery(query); // update the ResultSet
 
-            statement.close();
+            // get the number of columns
+            ResultSetMetaData meta = this.results.getMetaData();
+            int columns = meta.getColumnCount();
 
             return this.results; // return the result set (also functions as a getter method)
         } catch (SQLException e) {
@@ -167,6 +193,7 @@ public class SQLAccess {
             ex.printStackTrace();
             System.exit(1);
         }
+
         return null;
     }
 
