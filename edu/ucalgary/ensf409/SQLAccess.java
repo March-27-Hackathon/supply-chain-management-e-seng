@@ -39,9 +39,11 @@ public class SQLAccess {
         } catch (SQLException e) {
             System.out.println("SQL connection failed.");
             e.printStackTrace();
+            System.exit(1);
         } catch (Exeption e) {
             System.out.println("Unknown error in initialization.");
             e.printStackTrace();
+            System.exit(1);
         }
     }
 
@@ -54,9 +56,11 @@ public class SQLAccess {
         } catch (SQLException e) {
             System.out.println("Error while closing database connection");
             e.printStackTrace();
+            System.exit(1);
         } catch (Exception e) {
             System.out.println("Unknown error while closing database connection");
             e.printStackTrace();
+            System.exit(1);
         }
     }
 
@@ -93,10 +97,12 @@ public class SQLAccess {
             System.out.println("Error deleting furniture item " + id
                 + " from " + table);
             e.printStackTrace();
+            System.exit(1);
         } catch (Exception e) {
             System.out.println("Unknown error deleting furniture item " + id
                 + " from " + table);
             e.printStackTrace();
+            System.exit(1);
         }
     }
 
