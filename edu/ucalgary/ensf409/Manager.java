@@ -69,6 +69,27 @@ public class Manager{
      * @return -1.00 if the order cannot be completed, the price otherwise.
      */
     public double parseOrder(String itemType, String itemCategory, int quantity){
+        // Check if the inputs are valid.
+        if(itemType == null || itemCategory == null || quantity == 0){
+            System.out.println("Invalid request.");
+            return -1;
+        }
+
+        // Find all necessary parts to complete the order
+        while(quantity > 0){
+            String orderCombination[] = findCheapestItems(itemType, itemCategory);
+
+            // If there are too few parts to complete an order, exit.
+            if(orderCombination.length == 0){
+                return -1;
+            }
+
+            for(String partID : orderCombination){
+                orderedParts.add(partID);
+            }
+
+            quantity--;
+        }
     }
 
 
