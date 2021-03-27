@@ -55,7 +55,7 @@ public class SQLAccess {
             System.out.println("Error while closing database connection");
             e.printStackTrace();
         } catch (Exception e) {
-            System.out.println("Unknonw error while closing database connection");
+            System.out.println("Unknown error while closing database connection");
             e.printStackTrace();
         }
     }
@@ -67,7 +67,37 @@ public class SQLAccess {
      * @return boolean value of success or failure
      */
     public boolean removeFurniture (String table, String id) {
+        try {
+            String query = "DELETE FROM ? WHERE id = ?";    // set up query
+            PreparedStatement delStmnt = dbConnection.prepareStatement(query);
 
+            delStmnt.setString(1, table);   // insert specific table
+            delStmnt.setString(2, id);      // insert id to be removed
+
+            int rows = delStmnt.executeUpdate();    // update the table
+
+            delStmnt.close();
+
+            /* 
+             * ID's are unique and there should only be one instance of it
+             * Check to see if the row was effected and return true if the item
+             * was deleted and false if there was an error such as the ID not 
+             * existing.
+             */
+            if (rows == 1) {  
+                return true;
+            } else {
+                return false;
+            }
+        } catch (SQLException e) {
+            System.out.println("Error deleting furniture item " + id
+                + " from " + table);
+            e.printStackTrace();
+        } catch (Exception e) {
+            System.out.println("Unknown error deleting furniture item " + id
+                + " from " + table);
+            e.printStackTrace();
+        }
     }
 
     /**
