@@ -9,6 +9,9 @@
 package edu.ucalgary.ensf409;
 
 import java.sql.*;
+import java.util.ArrayList;
+
+import jdk.javadoc.internal.doclets.formats.html.resources.standard;
 
 public class SQLAccess {
     private final String USERNAME;
@@ -138,14 +141,14 @@ public class SQLAccess {
      */
     public ResultSet getTableInformation (String table) {
         try {
-            String query = "SELECT * FROM " + table;
+            String query = "SELECT * FROM " + table; // set query with proper table
 
-            Statement statement = dbConnection.createStatement();
-            this.results = statement.executeQuery(query);
+            Statement statement = dbConnection.createStatement();   // get all data from the table
+            this.results = statement.executeQuery(query); // update the ResultSet
 
             statement.close();
 
-            return this.results;
+            return this.results; // return the result set (also functions as a getter method)
         } catch (SQLException e) {
             System.out.println("Error in accessing the table and it's information");
             e.printStackTrace();
@@ -159,16 +162,52 @@ public class SQLAccess {
     }
 
     /**
-     * Allows access to the members in a given result set and returns information
-     * based on a field and a key.
+     * Allows access to the members in a given table and returns information
+     * based on a field and a key. The method also checks for whether or not
+     * a field exists within the table and whether the key exists.
      * @param table the table through which we will be searching.
      * @param field the field needed to be searched by (can be found originally 
      * using the getFileds() method)
      * @param key the key in the provided field to be searching for.
      * @return the entire information set as organized by field order into a 
-     * String array
+     * String array. null will be returned if the key does not exist or the field 
+     * does not exist in the table.
      */
     public String [] searchFor (String table, String field, String key) {
+        /* Handling the errors for if the field does not exist */
+        String [] fields = this.getFields(table);   // retrieve the fields
+        String tmp = "";
+        for (int i = 0; i < fields.length; i++) {   // if the field is found, exit
+            if (fields[i].equals(field)) {
+                tmp = fields[i];
+                break;
+            }
+        }
 
+        if (tmp.equals("")) {   // compare if the tmp was changed.
+            return null;
+        }
+
+         // Proceeding with search
+        String query = "SELECT * FROM " + table + " WHERE " + field + " = \'" + key + "\'";
+        Statement searchStmt = dbConnection.createStatement();
+        this.results = searchStmt.executeQuery(query);
+
+        ArrayList <String> arr = new ArrayList<String>();
+        int k = 0;
+
+        for (String item: fields) {
+            arr.add(this.results.getString(item));  // add the fields in order
+        }
+
+        return arr.toArray();
+    }
+
+    /**
+     * Getter method for the current ResultSet
+     * @return current results
+     */
+    public ResulSet getResults () {
+        return this.results;
     }
 }
