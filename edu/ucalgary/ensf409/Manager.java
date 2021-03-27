@@ -13,6 +13,7 @@ public class Manager{
     private SQLAccess databaseAccess;
     private ArrayList<String> orderedParts;
     private int totalPrice;
+
     private String dbUsername;
     private String dbPassword;
     private String dbUrl;
@@ -145,7 +146,11 @@ public class Manager{
      * Purchases the items and removes the items from the database.
      * A purchased item has no need to be in the database anymore.
      */
-    private void purchaseItems(){}
+    private void purchaseItems(){
+        for(String id : orderedParts){
+            databaseAccess.removeFurniture()
+        }
+    }
 
 
     /**
