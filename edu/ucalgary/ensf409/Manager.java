@@ -115,6 +115,14 @@ public class Manager{
     }
 
 
+
+    /**
+     * Purchases the items and removes the items from the database.
+     * A purchased item has no need to be in the database anymore.
+     */
+    private void purchaseItems(){}
+
+
     /**
      * Confirms the order if the user wishes to.
      * This will remove all bought instances within the database.
@@ -122,11 +130,7 @@ public class Manager{
      */
     public void confirmOrder(){
         saveOrder();
+        purchaseItems();
+        reset();
     }
-
-    /**
-     * Purchases the items and removes the items from the database.
-     * A purchased item has no need to be in the database anymore.
-     */
-    private void purchaseItems(){}
 }
