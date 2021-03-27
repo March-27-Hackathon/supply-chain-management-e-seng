@@ -107,6 +107,8 @@ public class Manager{
 
     /**
      * Confirms the order if the user wishes to.
+     * This will remove all bought instances within the database.
+     * This will also reset the manager once the file is written.
      */
     public void confirmOrder(){
         saveOrder();
