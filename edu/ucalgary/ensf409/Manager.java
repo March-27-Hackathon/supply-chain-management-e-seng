@@ -7,14 +7,17 @@
 
 package edu.ucalgary.ensf409;
 
+import java.util.ArrayList;
+
 public class Manager{
     private final SQLAccess databaseAccess;
     private final FileIO orderPrinter;
-    private final orderedParts;
+    private final ArrayList<String> orderedParts;
 
     public Manager(){
         this.databaseAccess = new SQLAccess();
         this.orderPrinter = new SQLAccess();
+        orderedParts = new ArrayList<String>();
     }
 
     /**
