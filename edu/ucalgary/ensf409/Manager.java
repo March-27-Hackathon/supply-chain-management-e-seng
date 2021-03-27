@@ -41,20 +41,30 @@ public class Manager{
      * manufacturer ID.
      *  - This is to follow the convention provided by the example output
      *
-     *  @param itemCategory The overall category that the item falls under.
-     *   - This should be one of the tables in the Database.
+     *  If the item is already ordered, then ignore it.
+     *
      *  @param itemType The specific type of the item that is desired.
      *   - This word should be contained within the "type" field within each
      *     table.
+     *  @param itemCategory The overall category that the item falls under.
+     *   - This should be one of the tables in the Database.
      *  
      *  eg. if the query is: <code>mesh chair, 2</code>
      *  This method should be called twice.
      *
-     * @throws IllegalArgumentException Thrown if item cannot be found within
-     * database.
-     *
      * @return A String array containing all ordered parts for the request.
      */
-    private String[] findCheapestItems(String itemCategory, String itemType){
+    private String[] findCheapestItems(String itemType, String itemCategory){
+    }
+
+
+    /**
+     * Parses the desired order request from user input.
+     *
+     * @param order The order that the user is trying to make
+     *
+     * @return -1.00 if the order cannot be completed, the price otherwise.
+     */
+    public double parseOrder(String itemType, String itemCategory, int quantity){
     }
 }
