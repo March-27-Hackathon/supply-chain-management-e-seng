@@ -2,7 +2,7 @@
  * @author Liana Goodman
  * @author Ethan Sengsavang
  * @author Amir Abdrakmanov
- * @version 1.4
+ * @version 1.5
  * @since 1.0
  */
 
@@ -10,8 +10,6 @@ package edu.ucalgary.ensf409;
 
 import java.sql.*;
 import java.util.ArrayList;
-
-import jdk.javadoc.internal.doclets.formats.html.resources.standard;
 
 public class SQLAccess {
     private final String USERNAME;
@@ -39,14 +37,14 @@ public class SQLAccess {
      */
     private void initializeConnection () {
         try{
-            dbConnect = DriverManager.getConnection(this.DBURL, this.USERNAME, this.PASSWORD);
+            dbConnection = DriverManager.getConnection(this.DBURL, this.USERNAME, this.PASSWORD);
         } catch (SQLException e) {
             System.out.println("SQL connection failed.");
             e.printStackTrace();
             System.exit(1);
-        } catch (Exeption e) {
+        } catch (Exception ex) {
             System.out.println("Unknown error in initialization.");
-            e.printStackTrace();
+            ex.printStackTrace();
             System.exit(1);
         }
     }
@@ -56,15 +54,15 @@ public class SQLAccess {
      */
     private void close () {
         try {
-            this.dbConnect.close();
+            this.dbConnection.close();
             this.results.close();
         } catch (SQLException e) {
             System.out.println("Error while closing database connection and result set");
             e.printStackTrace();
             System.exit(1);
-        } catch (Exception e) {
+        } catch (Exception ex) {
             System.out.println("Unknown error while closing database connection and result set");
-            e.printStackTrace();
+            ex.printStackTrace();
             System.exit(1);
         }
     }
@@ -95,20 +93,19 @@ public class SQLAccess {
              */
             if (rows == 1) {  
                 return true;
-            } else {
-                return false;
             }
         } catch (SQLException e) {
             System.out.println("Error deleting furniture item " + id
                 + " from " + table);
             e.printStackTrace();
             System.exit(1);
-        } catch (Exception e) {
+        } catch (Exception ex) {
             System.out.println("Unknown error deleting furniture item " + id
                 + " from " + table);
-            e.printStackTrace();
+            ex.printStackTrace();
             System.exit(1);
         }
+        return false;
     }
 
     /**
@@ -118,26 +115,38 @@ public class SQLAccess {
      * @return String array of the fields in order
      */
     public String [] getFields(String table) {
-        // Retrieve all results from the table (not necessary to pull all but simple)
-        this.results = getTableInformation(table);
-        ResultSetMetaData meta = this.results.getMetaData(); // retrieve metadata about the table
+        try {
+            // Retrieve all results from the table (not necessary to pull all but simple)
+            this.results = getTableInformation(table);
+            ResultSetMetaData meta = this.results.getMetaData(); // retrieve metadata about the table
 
-        // Make an array that will fit all the fields
-        String [] fields = new String [meta.getColumnCount()];
+            // Make an array that will fit all the fields
+            String [] fields = new String [meta.getColumnCount()];
 
-        for (int i = 0; i < fields.length; i++) {   // fill the array
-            /* Metadata getColumnName starts at index 1 where as arrays start
-             * at 0th index. */
-            fields[i] = meta.getColumnName(i + 1);
+            for (int i = 0; i < fields.length; i++) {   // fill the array
+                /* Metadata getColumnName starts at index 1 where as arrays start
+                * at 0th index. */
+                fields[i] = meta.getColumnName(i + 1);
+            }
+
+            return fields;
+        } catch (SQLException e) {
+            System.out.println("Error retrieving fields.");
+            e.printStackTrace();
+            System.exit(1);
+        } catch (Exception ex) {
+            System.out.println("Unknonw error retrieving fields.");
+            ex.printStackTrace();
+            System.exit(1);
         }
 
-        return fields;
+        return null;
     }
 
     /**
      * Gets all the information in a given table and returns the results
      * @param table the table from which to retrive all the data from
-     * @return ResultSet of all results in the table
+     * @return ResultSet of all results in the table returns null if unsuccessful
      */
     public ResultSet getTableInformation (String table) {
         try {
@@ -153,12 +162,12 @@ public class SQLAccess {
             System.out.println("Error in accessing the table and it's information");
             e.printStackTrace();
             System.exit(1);
-        } catch (Exception e) {
+        } catch (Exception ex) {
             System.out.println("Unknonw error in accessing the table and it's information");
-            e.printStackTrace();
+            ex.printStackTrace();
             System.exit(1);
         }
-
+        return null;
     }
 
     /**
@@ -188,26 +197,38 @@ public class SQLAccess {
             return null;
         }
 
-         // Proceeding with search
-        String query = "SELECT * FROM " + table + " WHERE " + field + " = \'" + key + "\'";
-        Statement searchStmt = dbConnection.createStatement();
-        this.results = searchStmt.executeQuery(query);
+        try {
+            // Proceeding with search
+            String query = "SELECT * FROM " + table + " WHERE " + field + " = \'" + key + "\'";
+            Statement searchStmt = dbConnection.createStatement();
+            this.results = searchStmt.executeQuery(query);
 
-        ArrayList <String> arr = new ArrayList<String>();
-        int k = 0;
+            ArrayList <String> arr = new ArrayList<String>();
+            int k = 0;
 
-        for (String item: fields) {
-            arr.add(this.results.getString(item));  // add the fields in order
+            for (String item: fields) {
+                arr.add(this.results.getString(item));  // add the fields in order
+            }
+
+            return arr.toArray(new String[arr.size()]);
+        } catch (SQLException e) {
+            System.out.println("Error in retrieving " + key + " from " + field + " in " + table);
+            e.printStackTrace();
+            System.exit(1);
+        } catch (Exception ex) {
+            System.out.println("Unknown error in retrieving " + key + " from " + field + " in " + table);
+            ex.printStackTrace();
+            System.exit(1);
         }
 
-        return arr.toArray();
+        return null;
     }
 
     /**
      * Getter method for the current ResultSet
      * @return current results
      */
-    public ResulSet getResults () {
+    public ResultSet getResults () {
         return this.results;
     }
 }
