@@ -92,7 +92,7 @@ public class Manager{
      * @param itemCategory The overall category that the item falls under.
      *  - This should be one of the tables in the database.
      *
-     * @return A String array with all relevant parts, may be empty
+     * @return A String array with all relevant part IDs, may be empty
      */
     private String getAllParts(String itemType, String itemCategory){
     }
