@@ -10,8 +10,8 @@ package edu.ucalgary.ensf409;
 import java.util.ArrayList;
 
 public class Manager{
-    private final SQLAccess databaseAccess;
-    private final FileIO orderPrinter;
+    private SQLAccess databaseAccess;
+    private FileIO orderPrinter;
     private ArrayList<String> orderedParts;
 
     public Manager(){
