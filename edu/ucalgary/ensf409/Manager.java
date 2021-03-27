@@ -16,8 +16,15 @@ public class Manager{
     private int totalPrice;
 
     public Manager(){
-        this.databaseAccess = new SQLAccess();
-        this.orderPrinter = new SQLAccess();
+        reset();
+    }
+
+    private reset(){
+        if(databaseAccess != null){
+            databaseAccess.close();
+        }
+
+        orderPrinter = new FileIO();
         orderedParts = new ArrayList<String>();
         totalPrice = 0;
     }
