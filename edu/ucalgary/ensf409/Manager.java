@@ -15,4 +15,15 @@ public class Manager{
         this.databaseAccess = new SQLAccess();
         this.orderPrinter = new SQLAccess();
     }
+
+    /**
+     * Save the order with the cheapest necessary items within the database to
+     * a .text file.
+     * This will invoke a method within FileIO to save the files.
+     * Information is sent in as raw data.
+     * TODO: ensure data is sent in the correct order and format.
+     *
+     */
+    public void saveOrder(){
+    }
 }
