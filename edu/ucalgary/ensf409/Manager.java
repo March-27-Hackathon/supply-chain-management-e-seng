@@ -11,11 +11,18 @@ import java.util.ArrayList;
 
 public class Manager{
     private SQLAccess databaseAccess;
-    private FileIO orderPrinter;
     private ArrayList<String> orderedParts;
     private int totalPrice;
+    private String dbUsername;
+    private String dbPassword;
+    private String dbUrl;
+    private String fileName;
 
-    public Manager(){
+    public Manager(String dbUsername, String dbPassword, String dbUrl, String fileName){
+        this.dbUsername = dbUsername;
+        this.dbPassword = dbPassword;
+        this.dbUrl = dbUrl;
+        this.fileName = fileName;
         reset();
     }
 
@@ -27,7 +34,7 @@ public class Manager{
             databaseAccess.close();
         }
 
-        orderPrinter = new FileIO();
+        databaseAccess = new SQLAccess(dbUsername, dbPassword, dbUrl);
         orderedParts = new ArrayList<String>();
         totalPrice = 0;
     }
