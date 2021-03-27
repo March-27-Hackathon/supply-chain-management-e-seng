@@ -13,11 +13,13 @@ public class Manager{
     private SQLAccess databaseAccess;
     private FileIO orderPrinter;
     private ArrayList<String> orderedParts;
+    private int totalPrice;
 
     public Manager(){
         this.databaseAccess = new SQLAccess();
         this.orderPrinter = new SQLAccess();
         orderedParts = new ArrayList<String>();
+        totalPrice = 0;
     }
 
     /**
