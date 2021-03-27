@@ -2,7 +2,7 @@
  * @author Liana Goodman
  * @author Ethan Sengsavang
  * @author Amir Abdrakmanov
- * @version 1.0
+ * @version 1.4
  * @since 1.0
  */
 
@@ -15,6 +15,7 @@ public class SQLAccess {
     private final String PASSWORD;
     private final String DBURL;
     private Connection dbConnection;
+    private ResultSet results;
 
     /**
      * Constructor for SQLAccess to initialize server and database information
@@ -27,13 +28,13 @@ public class SQLAccess {
         this.USERNAME = username;
         this.PASSWORD = password;
         this.DBURL = dburl;
-        initializeConnection();
+        this.initializeConnection();
     }
 
     /**
      * Initializes connection with instance username, password, and dburl
      */
-    public void initializeConnection () {
+    private void initializeConnection () {
         try{
             dbConnect = DriverManager.getConnection(this.DBURL, this.USERNAME, this.PASSWORD);
         } catch (SQLException e) {
@@ -48,17 +49,18 @@ public class SQLAccess {
     }
 
     /**
-     * Closes connection to the database
+     * Closes connection to the database and the ResultSet used throughout the class
      */
-    private void closeConnection () {
+    private void close () {
         try {
-            dbConnect.close();
+            this.dbConnect.close();
+            this.results.close();
         } catch (SQLException e) {
-            System.out.println("Error while closing database connection");
+            System.out.println("Error while closing database connection and result set");
             e.printStackTrace();
             System.exit(1);
         } catch (Exception e) {
-            System.out.println("Unknown error while closing database connection");
+            System.out.println("Unknown error while closing database connection and result set");
             e.printStackTrace();
             System.exit(1);
         }
@@ -113,7 +115,20 @@ public class SQLAccess {
      * @return String array of the fields in order
      */
     public String [] getFields(String table) {
+        // Retrieve all results from the table (not necessary to pull all but simple)
+        this.results = getTableInformation(table);
+        ResultSetMetaData meta = this.results.getMetaData(); // retrieve metadata about the table
 
+        // Make an array that will fit all the fields
+        String [] fields = new String [meta.getColumnCount()];
+
+        for (int i = 0; i < fields.length; i++) {   // fill the array
+            /* Metadata getColumnName starts at index 1 where as arrays start
+             * at 0th index. */
+            fields[i] = meta.getColumnName(i + 1);
+        }
+
+        return fields;
     }
 
     /**
@@ -122,20 +137,38 @@ public class SQLAccess {
      * @return ResultSet of all results in the table
      */
     public ResultSet getTableInformation (String table) {
+        try {
+            String query = "SELECT * FROM " + table;
+
+            Statement statement = dbConnection.createStatement();
+            this.results = statement.executeQuery(query);
+
+            statement.close();
+
+            return this.results;
+        } catch (SQLException e) {
+            System.out.println("Error in accessing the table and it's information");
+            e.printStackTrace();
+            System.exit(1);
+        } catch (Exception e) {
+            System.out.println("Unknonw error in accessing the table and it's information");
+            e.printStackTrace();
+            System.exit(1);
+        }
 
     }
 
     /**
      * Allows access to the members in a given result set and returns information
      * based on a field and a key.
-     * @param resultSet the ResultSet that is provided for search
+     * @param table the table through which we will be searching.
      * @param field the field needed to be searched by (can be found originally 
      * using the getFileds() method)
      * @param key the key in the provided field to be searching for.
      * @return the entire information set as organized by field order into a 
      * String array
      */
-    public String [] searchFor (ResultSet resultSet, String field, String key) {
+    public String [] searchFor (String table, String field, String key) {
 
     }
 }
