@@ -94,7 +94,7 @@ public class Manager{
         // Check if the inputs are valid.
         if(itemType == null || itemCategory == null || quantity == 0){
             System.out.println("Invalid request.");
-            return -1;
+            System.exit(1);
         }
 
         // Find all necessary parts to complete the order
@@ -113,7 +113,6 @@ public class Manager{
             quantity--;
         }
     }
-
 
 
     /**
