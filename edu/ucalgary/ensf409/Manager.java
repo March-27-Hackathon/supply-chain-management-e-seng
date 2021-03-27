@@ -69,11 +69,11 @@ public class Manager{
      *
      *  If the item is already ordered, then ignore it.
      *
-     *  @param itemType The specific type of the item that is desired.
-     *   - This word should be contained within the "type" field within each
-     *     table.
-     *  @param itemCategory The overall category that the item falls under.
-     *   - This should be one of the tables in the Database.
+     * @param itemType The specific type of the item that is desired.
+     *  - This word should be contained within the "type" field within each
+     *    table.
+     * @param itemCategory The overall category that the item falls under.
+     *  - This should be one of the tables in the Database.
      *
      *  eg. if the query is: <code>mesh chair, 2</code>,
      *  this method should be called twice.
