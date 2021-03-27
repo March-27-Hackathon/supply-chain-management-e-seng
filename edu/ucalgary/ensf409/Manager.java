@@ -25,7 +25,7 @@ public class Manager{
      * TODO: ensure data is sent in the correct order and format.
      *
      */
-    public void saveOrder(){
+    private void saveOrder(){
     }
     
     /**
@@ -66,5 +66,13 @@ public class Manager{
      * @return -1.00 if the order cannot be completed, the price otherwise.
      */
     public double parseOrder(String itemType, String itemCategory, int quantity){
+    }
+
+
+    /**
+     * Confirms the order if the user wishes to.
+     */
+    public void confirmOrder(){
+        saveOrder();
     }
 }
