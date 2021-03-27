@@ -12,7 +12,7 @@ import java.util.ArrayList;
 public class Manager{
     private final SQLAccess databaseAccess;
     private final FileIO orderPrinter;
-    private final ArrayList<String> orderedParts;
+    private ArrayList<String> orderedParts;
 
     public Manager(){
         this.databaseAccess = new SQLAccess();
