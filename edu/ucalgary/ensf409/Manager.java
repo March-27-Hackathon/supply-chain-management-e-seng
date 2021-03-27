@@ -51,6 +51,11 @@ public class Manager{
      *
      */
     private void saveOrder(){
+        if(fileName == null){
+            System.out.println("File name not specified.");
+            System.exit(1);
+        }
+        FileIO orderWriter = new FileIO(fileName);
     }
 
 
