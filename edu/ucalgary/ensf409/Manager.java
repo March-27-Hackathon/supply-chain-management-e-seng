@@ -93,18 +93,32 @@ public class Manager{
      * Gets the total cost of all items within the given array of IDs.
      *
      * @param ids The array of ids to get prices from.
-     * @param itemType The specific type of the item that is desired.
-     *  - This word should be contained within the "type" field within each
-     *    table.
      * @param itemCategory The overall category that the item falls under.
      *  - This should be one of the tables in the Database.
      *
      * @return The combined cost of each specified part.
      */
-    private double getPrice(String[] ids, String itemType, String itemCategory){
-        for(String id : ids){
-            
+    private double getPrice(String[] ids, String itemCategory){
+        String[] fields = databaseAccess.getFields(itemCategory);
+
+        // Ensure that the price field is handled
+        int priceIndex = 0;
+        for(String field : fields){
+            if(field.equals("Price"){
+                break;
+            }
+
+            priceIndex++;
         }
+
+        double totalCost = 0;
+        for(String id : ids){
+            String[] itemRow = databaseAccess.searchFor(itemCategory, "ID", id);
+            String priceStr = itemRow[priceIndex];
+            priceIndex += Double.parseDouble(priceStr);
+        }
+
+        return totalCost;
     }
 
 
