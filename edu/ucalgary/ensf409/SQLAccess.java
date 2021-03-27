@@ -2,7 +2,7 @@
  * @author Liana Goodman
  * @author Ethan Sengsavang
  * @author Amir Abdrakmanov
- * @version 1.7
+ * @version 1.8
  * @since 1.0
  */
 
@@ -32,9 +32,27 @@ public class SQLAccess {
         success = access.removeFurniture("LAMP", "L015"); // returns false
         System.out.println(success);
 
-        String [] fields = access.getFields("LAMP");
+        String [] fields = access.getFields("FILING");
         for (String item:fields) {
-            System.out.println(item);
+            System.out.print(item +"\t");
+        }
+
+        System.out.println("\nSearch results:");
+        String [][] searchResults = access.searchFor("FILING", "Type", "Small");
+        for (int i = 0; i < searchResults.length; i++) {
+            for (int j = 0; j < searchResults[i].length; j++) {
+                System.out.print(searchResults[i][j] + "\t");
+            }
+            System.out.println();
+        }
+
+        System.out.println("\nFilter results:");
+        searchResults = access.filter("FILING", "Small", "Rails", "Y");
+        for (int i = 0; i < searchResults.length; i++) {
+            for (int j = 0; j < searchResults[i].length; j++) {
+                System.out.print(searchResults[i][j] + "\t");
+            }
+            System.out.println();
         }
 
         access.close();
@@ -175,7 +193,6 @@ public class SQLAccess {
         try {
 
             String query = "SELECT * FROM " + table; // set query with proper table
-            System.out.println("Query:\t" + query);
 
             this.results = statement.executeQuery(query); // update the ResultSet
 
@@ -206,10 +223,11 @@ public class SQLAccess {
      * using the getFileds() method)
      * @param key the key in the provided field to be searching for.
      * @return the entire information set as organized by field order into a 
-     * String array. null will be returned if the key does not exist or the field 
-     * does not exist in the table.
+     * double String array to accomodate multiple instances. 
+     * null will be returned if the key does not exist or the field does not 
+     * exist in the table.
      */
-    public String [] searchFor (String table, String field, String key) {
+    public String [][] searchFor (String table, String field, String key) {
         /* Handling the errors for if the field does not exist */
         String [] fields = this.getFields(table);   // retrieve the fields
         String tmp = "";
@@ -230,14 +248,20 @@ public class SQLAccess {
             Statement searchStmt = dbConnection.createStatement();
             this.results = searchStmt.executeQuery(query);
 
-            ArrayList <String> arr = new ArrayList<String>();
-            int k = 0;
+            ArrayList<String []> arr = new ArrayList<String []>();
 
-            for (String item: fields) {
-                arr.add(this.results.getString(item));  // add the fields in order
+            while (this.results.next()) {
+                String [] temp = new String [fields.length];
+
+                for (int i = 0; i < temp.length; i++) {
+                    temp [i] = this.results.getString(i + 1);
+                }
+
+                arr.add(temp);
             }
 
-            return arr.toArray(new String[arr.size()]);
+            return arr.toArray(new String[arr.size()][fields.length]);
+
         } catch (SQLException e) {
             System.out.println("Error in retrieving " + key + " from " + field + " in " + table);
             e.printStackTrace();
@@ -257,5 +281,54 @@ public class SQLAccess {
      */
     public ResultSet getResults () {
         return this.results;
+    }
+
+    /**
+     * Search for item based on table, type and a third characteristic parameter
+     * make sure that all instances are found.
+     * @param table the table to be searched
+     * @param type type value that matches the type
+     * @param param third search parameter which is specific to a single table
+     * @param key the value of param to be searched for.
+     * @return returns a double String array of all the results that match the
+     * criteria based on the parameters. null will be returned if there are no
+     * results.
+     */
+    public String [][] filter (String table, String type, String param, String key) {
+        try {
+            // Search
+            String [] fields = this.getFields(table);
+            String query = "SELECT * FROM " + table + " WHERE Type = \'" + type + "\' AND "
+                + param + " = \'" + key + "\'";
+            Statement searchStmt = dbConnection.createStatement();
+            this.results = searchStmt.executeQuery(query);
+
+            ArrayList<String []> arr = new ArrayList<String []>();
+
+            while (this.results.next()) {
+                String [] temp = new String [fields.length];
+
+                for (int i = 0; i < temp.length; i++) {
+                    temp [i] = this.results.getString(i + 1);
+                }
+
+                arr.add(temp);
+            }
+
+            return arr.toArray(new String[arr.size()][fields.length]);
+
+        } catch (SQLException e) {
+            System.out.println("Error in retrieving values from " + table + 
+                " filtered by type " + type + " and " + key + " under " + param);
+            e.printStackTrace();
+            System.exit(1);
+        } catch (Exception ex) {
+            System.out.println("Unknown Error in retrieving values from " + table + 
+                " filtered by type " + type + " and " + key + " under " + param);
+            ex.printStackTrace();
+            System.exit(1);
+        }
+
+        return null;
     }
 }
