@@ -99,6 +99,17 @@ public class Manager{
 
 
     /**
+     * Gets the total cost of all items within the given array of IDs.
+     *
+     * @param ids The array of ids to get prices from.
+     *
+     * @return The combined cost of each specified part.
+     */
+    private double getPrice(String[] ids){
+    }
+
+
+    /**
      * Parses the desired order request from user input.
      *
      * @param order The order that the user is trying to make
