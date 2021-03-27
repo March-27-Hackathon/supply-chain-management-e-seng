@@ -26,4 +26,39 @@ public class Manager{
      */
     public void saveOrder(){
     }
+    
+    /**
+     * Finds the cheapest desired item and return all relevent IDs.
+     *
+     * As compete items are determined based off a non-zero number of items
+     * satisfying all properties of an object, this will compare every
+     * combination of possible peices in attempt to minimize the total cost only.
+     *
+     * A completed desired item will be returned as a String array. The length
+     * will be the number of needed pieces to complete the item. Each element
+     * will be the item's unique ID within the database - not the item's 
+     * manufacturer ID.
+     *  - This is to follow the convention provided by the example output
+     *
+     *  @param itemCategory The overall category that the item falls under.
+     *   - This should be one of the tables in the Database.
+     *  @param itemType The specific type of the item that is desired.
+     *   - This word should be contained within the "type" field within each
+     *     table.
+     *  @param usedIDs All ids that were used previously.
+     *   - These IDs should be ignored when determining the cheapest set,
+     *     mostly to prevent duplicates.
+     *  
+     *  eg. if the query is: <code>mesh chair, 2</code>
+     *  This method should be called twice:
+     *  1st: <code>findCheapestCombination("chair", "mesh", new String[])</code>
+     *  2nd: <code>findCheapestCombination("chair", "mest", [&lt;part1&gt;, &lt;part2&gt;,...])</code>
+     *
+     * @throws IllegalArgumentException Thrown if item cannot be found within
+     * database.
+     *
+     * @return A String array containing all ordered parts for the request.
+     */
+    public String[] findCheapestItems(String itemCategory, String itemType){
+    }
 }
