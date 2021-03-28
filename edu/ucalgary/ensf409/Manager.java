@@ -329,6 +329,17 @@ public class Manager{
     }
 
 
+    private String[][] arrAppend(String[][] original, String item[]){
+        String[][] returnedArray = new String[original.length+1][item.length];
+        for(int index = 0; index < original.length; index++){
+            returnedArray[index] = original[index];
+        }
+
+        returnedArray[original.length] = item;
+        return returnedArray;
+    }
+
+
     private String[] arrRemove(String[] original, int ignoreIndex){
         return arrRemove(original, original[ignoreIndex]);
     }
