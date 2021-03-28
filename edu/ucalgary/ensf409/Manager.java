@@ -150,7 +150,7 @@ public class Manager{
         // hash map pls
         boolean[] stillMissing = missingParts;
         if(chosenIDs.length != 0){
-            stillMissing = new boolean[missingParts.length]
+            stillMissing = new boolean[missingParts.length];
             int id = chosenIDs[chosenIDs.length - 1];
             String[] itemRow = databaseAccess.searchFor(itemCategory, "ID", id)[0];
             String[] itemParts = isolateParts(itemRow);
@@ -253,7 +253,7 @@ public class Manager{
         // Ensure that the price field is handled
         int priceIndex = 0;
         for(String field : fields){
-            if(field.equals("Price"){
+            if(field.equals("Price")){
                 break;
             }
 
@@ -313,7 +313,7 @@ public class Manager{
      */
     private void purchaseItems(){
         for(String id : orderedParts){
-            databaseAccess.removeFurniture()
+            databaseAccess.removeFurniture();
         }
     }
 
