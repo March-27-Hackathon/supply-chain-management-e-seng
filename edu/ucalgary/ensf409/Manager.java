@@ -348,6 +348,8 @@ public class Manager{
 
         saveOrder(origReq, itemCategory);
         purchaseItems(itemCategory);
-        reset();
+        // reset();
+        
+        databaseAccess.close();
     }
 }
