@@ -24,6 +24,7 @@
 		 int quan=0;
 		 double hold=-1;
 		 String code="";
+		 String noun=null;
 		 String quantity;
 		 while(hold==-1){
 		 System.out.println("Please enter your desired furniture type:");
@@ -33,6 +34,7 @@
 		 this.request=this.request.trim();
 		String [] items=this.request.split(" ");
 		 quantity=quantity.trim();
+		 noun = new String(items[1]);
 		 code+=items[0].charAt(0);
 		 code+=items[1].charAt(0);
 		 if(items[0]==null||items[1]==null){
@@ -71,7 +73,6 @@
 			 System.exit(1);
 		 }
 		 }
-		 String noun=new String(this.request);
 		 this.request+=" ";
 		 this.request+=quantity;
 		 this.manage.setFileName(code);
