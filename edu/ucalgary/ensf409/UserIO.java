@@ -26,27 +26,28 @@ package edu.ucalgary.ensf409;
 		 int quan=0;
 		 double hold=-1;
 		 String code="";
-		 String quantity;
+		 String quantity="";
 		 while(hold==-1){
-		 System.out.println("Please enter your desired furniture type:");
+		 System.out.println("Please enter your desired furniture type or type 'Q' to quit:");
 		 this.request = System.console().readLine();
+		 if(this.request.equalsIgnoreCase("Q")){
+			 System.exit(1);
+		 }
 		 System.out.println("Please enter quantity:");
 		quantity=System.console().readLine();
 		 this.request=this.request.trim();
 		String [] items=this.request.split(" ");
 		 quantity=quantity.trim();
-		 code+=items[0].charAt(0);
-		 code+=items[1].charAt(0);
-		 if(items[0]==null||items[1]==null){
-			 continue;
-		 }
 		 try{
 		 quan = Integer.parseInt(quantity);
 		 if(quan<=0){
 			 throw new IllegalArgumentException();
 		 }
-		 if(items.length<2){
+		 if(items.length>2){
 			 throw new Exception();
+		 }
+		 if(items[0]==null||items[1]==null){
+			 continue;
 		 }
 		 }catch(IllegalArgumentException ex){
 			 System.out.println("Invalid quantity");
@@ -55,13 +56,17 @@ package edu.ucalgary.ensf409;
 			 System.out.println("Invalid furniture type");
 			 continue;
 		 }
+		 code+=items[0].charAt(0);
+		 code+=items[1].charAt(0);
 		 code+=quantity;
-		 hold=manage.parseOrder(items[0].toLowerCase(),items[1].toLowerCase(),quan);
+		 String adjective= items[0].substring(0,1).toUpperCase()+items[0].substring(1).toLowerCase();
+		 String noun= items[1].substring(0,1).toUpperCase()+items[1].substring(1).toLowerCase();
+		 hold=manage.parseOrder(adjective,noun,quan);
 		 if(hold==-1){
 			 System.out.println("Invalid furniture type");
 		 }else if(hold==-2){
 			 System.out.println("Order cannot be fulfilled based on current inventory");
-			 String[] manufaclist= this.manage.getManufacturersList(items[0].toLowerCase(),items[1].toLowerCase());
+			 String[] manufaclist= this.manage.getManufacturersList(adjective,noun);
 			 String temp="";
 			 for(int i=0; i<manufaclist.length-1; i++){
 				 temp+=manufaclist[i];
