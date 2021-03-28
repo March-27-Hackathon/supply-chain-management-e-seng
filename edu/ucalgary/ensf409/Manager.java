@@ -78,7 +78,16 @@ public class Manager{
 	 * manufacturers based on the desired item
 	 */
 	public String[] getManufacturersList(String descript, String item){
-		return this.databaseAccess.getManuIDs(item, descript);
+		//return this.databaseAccess.getManuIDs(item, descript);
+		String [] temp = this.databaseAccess.getManuID(item, descript);
+		String [] [] [] arrtemp= new String[temp.length];
+		for(int i=0; i<temp.length;i++){
+		arrtemp[i][][]=this.databaseAccess.searchFor("MANUFACTURER", "ManuID", temp[i]);
+		}
+		for(int i=0; i<temp.length;i++){
+			temp[i]=arrtemp[i][0][1];
+		}
+		return temp;
 	}
 
     /**
