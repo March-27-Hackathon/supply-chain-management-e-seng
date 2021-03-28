@@ -212,6 +212,14 @@ public class Manager{
     }
 
 
+    /**
+     * Appends a String to the end of a given String array.
+     *
+     * @param original The String array to append to
+     * @param item The String to append
+     * 
+     * @return The String array with the item appended at the ended
+     */
     private String[] arrAppend(String[] original, String item){
         String[] returnedArray = new String[original.length+1];
         for(int index = 0; index < original.length; index++){
