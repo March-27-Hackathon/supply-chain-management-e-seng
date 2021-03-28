@@ -78,7 +78,25 @@ import java.sql.*;
 			 System.out.println("Invalid furniture type");
 		 }else if(hold==-2){
 			 System.out.println("Order cannot be fulfilled based on current inventory");
-			 String[] manufaclist= this.manage.getManufacturersList(adjective,noun);
+
+             String[] manufaclist = null;
+             try{
+			    manufaclist= this.manage.getManufacturersList(adjective,noun);
+             }catch(SQLException e){
+                System.out.println("Manufacturer list could not be retrieved");
+                e.printStackTrace();
+                System.exit(1);
+             }catch(Exception e){
+                System.out.println("Unexpected error reached");
+                e.printStackTrace();
+                System.exit(1);
+             }
+
+             if(manufaclist == null){
+                System.out.println("Unexpected error reached");
+                System.exit(1);
+             }
+
 			 String temp="";
 			 for(int i=0; i<manufaclist.length-1; i++){
 				 temp+=manufaclist[i];
@@ -109,7 +127,7 @@ import java.sql.*;
 		 String dburl=System.console().readLine();
 		 try{
 		 this.manage= new Manager(user,pass,dburl);
-		 }catch(SQLExeception exp){
+		 }catch(SQLException exp){
 			 System.out.println("Error connecting to database");
 			 continue;
 		 }catch(Exception pez){
