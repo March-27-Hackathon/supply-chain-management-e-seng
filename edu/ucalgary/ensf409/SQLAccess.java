@@ -126,8 +126,6 @@ public class SQLAccess {
             String query = "DELETE FROM " + table + " WHERE id = \'" + id + "\'";    // set up query
             PreparedStatement delStmnt = dbConnection.prepareStatement(query);
 
-            // delStmnt.setString(1, id);      // insert id to be removed
-
             int rows = delStmnt.executeUpdate();    // update the table
 
             delStmnt.close();

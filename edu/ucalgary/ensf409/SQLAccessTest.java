@@ -10,25 +10,28 @@ package edu.ucalgary.ensf409;
 
 import static org.junit.Assert.*;
 import org.junit.*;
-
-import jdk.jfr.internal.LongMap;
-
 import java.io.*;
 import java.sql.SQLException;
 import java.util.*;
+import org.junit.contrib.java.lang.system.ExpectedSystemExit;
+import java.sql.*;
 
 /**
  * Tests fot the SQLAccess class. All tests will be using the constructor, 
  * the initialization and the closing method.
  */
 public class SQLAccessTest {
+    @Rule
+    // Handle System.exit() status
+    public final ExpectedSystemExit exit = ExpectedSystemExit.none();
+
     @Test
     /**
      * Tests the constructor and a failed connection.
      */
-    (expected=SQLException)
     public void constructorAndInitializationFailed () {
-        SQLAccess access = new SQLAccess("ensf409", "ensf409", "jdbc:mysql://localhost/INVENTORY");
+        exit.expectSystemExitWithStatus(1);
+        SQLAccess access = new SQLAccess("ensf409", "ensf409", "jdbc:mysql://localho/INVENTORY");
 
         access.close();
     }
@@ -40,7 +43,7 @@ public class SQLAccessTest {
     public void removeFurnitureExists () {
         SQLAccess access = new SQLAccess("ensf409", "ensf409", "jdbc:mysql://localhost/INVENTORY");
 
-        boolean success = access.removeFurniture(LAMP, "L982");
+        boolean success = access.removeFurniture("LAMP", "L053");
         access.close();
         assertTrue("Furniture not removed", success);
     }
@@ -52,7 +55,7 @@ public class SQLAccessTest {
     public void removeFurnitureNotExists () {
         SQLAccess access = new SQLAccess("ensf409", "ensf409", "jdbc:mysql://localhost/INVENTORY");
 
-        boolean success = access.removeFurniture(LAMP, "L982");
+        boolean success = access.removeFurniture("LAMP", "L676767676");
         access.close();
 
         // might need to check for a throw instead
@@ -141,7 +144,7 @@ public class SQLAccessTest {
     public void searchForExistingUniqueID () {
         SQLAccess access = new SQLAccess("ensf409", "ensf409", "jdbc:mysql://localhost/INVENTORY");
 
-        String [][] results = access.searchFor("MANUFACTERER", "ManuID", "001");
+        String [][] results = access.searchFor("MANUFACTURER", "ManuID", "001");
 
         String [][] orig = {{"001", "Academic Desks", "236-145-2542", "BC"}};
 
@@ -161,6 +164,7 @@ public class SQLAccessTest {
 
         String [][] orig = {{"F001", "Small", "Y", "Y", "N", "50", "005"},
                             {"F006", "Small", "Y", "Y", "N", "50", "005"},
+                            {"F008", "Medium", "Y", "N", "N", "50", "005"},
                             {"F013", "Small", "N", "N", "Y", "50", "002"}};
 
         access.close();
@@ -179,13 +183,25 @@ public class SQLAccessTest {
 
         access.close();
 
-        assertEquals (results, null);
+        ArrayList<String> arr = new ArrayList<>();
+
+        assertEquals(results, arr.toArray(new String [arr.size()]));
     }
 
     @Test
     /**
-     * Search for non-existing non-unique value
+     * Test where the field searched for does not exist and should return null 
      */
+    public void searchWithInvalidField () {
+        SQLAccess access = new SQLAccess("ensf409", "ensf409", "jdbc:mysql://localhost/INVENTORY");
+
+        String [][] results = access.searchFor("LAMP", "Condition", "007");
+
+        access.close();
+
+        assertNull(results);
+    }
+
     @Test
     /**
      * Search for existing non-unique value
@@ -197,7 +213,9 @@ public class SQLAccessTest {
 
         access.close();
 
-        assertEquals (results, null);
+        ArrayList<String> arr = new ArrayList<>();
+
+        assertEquals(results, arr.toArray(new String [arr.size()]));
     }
 
     @Test
@@ -231,7 +249,9 @@ public class SQLAccessTest {
 
         access.close();
 
-        assertEquals (filtered, null);
+        ArrayList<String> arr = new ArrayList<>();
+
+        assertEquals(filtered, arr.toArray(new String [arr.size()]));
     }
 
     @Test
@@ -245,7 +265,9 @@ public class SQLAccessTest {
 
         access.close();
 
-        assertEquals (filtered, null);
+        ArrayList<String> arr = new ArrayList<>();
+
+        assertEquals(filtered, arr.toArray(new String [arr.size()]));
     }
 
     @Test
@@ -276,7 +298,7 @@ public class SQLAccessTest {
 
         access.close();
 
-        assertEqual (ids, orig);
+        assertEquals (ids, orig);
     }
 
     @Test
@@ -289,7 +311,7 @@ public class SQLAccessTest {
         String [] ids = access.getManuIDs("CHAIR", "TrialPack");
 
         ArrayList <String> test = new ArrayList<>();
-        String [] orig = test.toArray(String [test.size()]);
+        String [] orig = test.toArray(new String [test.size()]);
 
         access.close();
 
