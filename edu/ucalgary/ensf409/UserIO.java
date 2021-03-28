@@ -59,12 +59,14 @@ package edu.ucalgary.ensf409;
 		 code+=items[0].charAt(0);
 		 code+=items[1].charAt(0);
 		 code+=quantity;
-		 hold=manage.parseOrder(items[0].toLowerCase(),items[1].toLowerCase(),quan);
+		 String adjective= items[0].substring(0,1).toUpperCase()+items[0].substring(1).toLowerCase();
+		 String noun= items[1].substring(0,1).toUpperCase()+items[1].substring(1).toLowerCase();
+		 hold=manage.parseOrder(adjective,noun,quan);
 		 if(hold==-1){
 			 System.out.println("Invalid furniture type");
 		 }else if(hold==-2){
 			 System.out.println("Order cannot be fulfilled based on current inventory");
-			 String[] manufaclist= this.manage.getManufacturersList(items[0].toLowerCase(),items[1].toLowerCase());
+			 String[] manufaclist= this.manage.getManufacturersList(adjective,noun);
 			 String temp="";
 			 for(int i=0; i<manufaclist.length-1; i++){
 				 temp+=manufaclist[i];
