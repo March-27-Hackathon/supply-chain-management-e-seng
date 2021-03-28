@@ -90,6 +90,20 @@ public class Manager{
     }
 
 
+    private String[] isolateParts(String[] row){
+        // Stuff to ignore exists at index 0, 1, row.length - 1 and row.length - 2
+        // ie. remove first two things and last two things
+        
+        // garbage
+        String[] returnArr = remove(row, 0);
+        returnArr = remove(returnArr, 0);
+        returnArr = remove(returnArr, returnArr.length-1);
+        returnArr = remove(returnArr, returnArr.legnth-1);
+
+        return returnArr;
+    }
+
+
     private String[] arrAppend(String[] original, String item){
         String[] returnedArray = new String[original.length+1];
         for(int index = 0; index < original; index++){
