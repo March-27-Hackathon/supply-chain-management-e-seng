@@ -20,11 +20,10 @@ public class Manager{
     private String dbUrl;
     private String fileName;
 
-    public Manager(String dbUsername, String dbPassword, String dbUrl, String fileName){
+    public Manager(String dbUsername, String dbPassword, String dbUrl){
         this.dbUsername = dbUsername;
         this.dbPassword = dbPassword;
         this.dbUrl = dbUrl;
-        this.fileName = fileName;
         reset();
     }
 
@@ -146,16 +145,16 @@ public class Manager{
      */
     private String[] minimizePrice(String[] chosenIDs, String[] idPool, boolean[] missingParts, String itemCategory){
         // no need for additional parts? return with the previous ids.
-        boolean incomplete = false;
+        boolean complete = true;
         for(boolean partMissing : missingParts){
-            incomplete = incomplete && partMissing;
+            complete = complete && !partMissing;
         }
-        if(!incomplete){
+        if(complete){
             return chosenIDs;
         }
         // still need things but nowhere to pull from? failed - return
         if(idPool.length == 0){
-            return null;
+            return new String[0];
         }
 
         // Determine which parts still need to be searched for.
@@ -180,8 +179,8 @@ public class Manager{
         String[] pool1 = arrRemove(idPool, 0);
 
         String[] lowest = minimizePrice(chosen1, pool1, stillMissing, itemCategory);
-        if(lowest == null){
-            return null; // This combination cannot be used
+        if(lowest.length == 0){
+            return new String[0]; // This combination cannot be used
         }
 
         for(int index = 1; index < idPool.length; index++){
@@ -307,7 +306,7 @@ public class Manager{
 
             // If there are too few parts to complete an order, exit.
             if(orderCombination.length == 0){
-                return -1;
+                return -2;
             }
 
             for(String partID : orderCombination){
