@@ -79,9 +79,17 @@ public class Manager{
 	 * Simple function that calls a database function to find a list of
 	 * manufacturers based on the desired item
 	 */
-    ///TODO : return manufacture names
 	public String[] getManufacturersList(String descript, String item) throws SQLException, Exception{
-		return this.databaseAccess.getManuIDs(item, descript);
+		//return this.databaseAccess.getManuIDs(item, descript);
+		String [] temp = this.databaseAccess.getManuID(item, descript);
+		String [] [] [] arrtemp= new String[temp.length];
+		for(int i=0; i<temp.length;i++){
+		arrtemp[i][][]=this.databaseAccess.searchFor("MANUFACTURER", "ManuID", temp[i]);
+		}
+		for(int i=0; i<temp.length;i++){
+			temp[i]=arrtemp[i][0][1];
+		}
+		return temp;
 	}
 
     /**

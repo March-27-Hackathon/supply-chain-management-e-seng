@@ -54,8 +54,8 @@ public class FileIOTest {
 	*/
     public void testSecondFileofSameName () throws IOException {
 		FileIO test1 = new FileIO ("L093");
-        String [] arr = {"C9890", "C0942"};
-        test1.write(arr, "mesh chair, 1", 150);
+        String [] arr1 = {"C9890", "C0942"};
+        test1.write(arr1, "mesh chair, 1", 150);
 		
         FileIO test = new FileIO ("L093");
         String [] arr = {"C9890", "C0942"};
@@ -85,9 +85,11 @@ public class FileIOTest {
 	it'll be blank however
 	*/
 	public void TestNullFile(){
-		FileIO test = new FileIO(null);
+		FileIO test = new FileIO("");
 		String [] arr= new String[2];
-		test.write(arr, "","",0);
+		arr[0]="Hello";
+		arr[1]="everybody";
+		test.write(arr, "t",0.0);
 		File temst = new File("order.txt");
 		assertTrue("File not created", temst.exists());
 	}
