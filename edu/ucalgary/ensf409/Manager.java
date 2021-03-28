@@ -322,10 +322,12 @@ public class Manager{
     /**
      * Purchases the items and removes the items from the database.
      * A purchased item has no need to be in the database anymore.
+     *
+     * @param itemCategory The category of the item
      */
-    private void purchaseItems(){
+    private void purchaseItems(String itemCategory){
         for(String id : orderedParts){
-            databaseAccess.removeFurniture();
+            databaseAccess.removeFurniture(itemCategory, id);
         }
     }
 
@@ -336,9 +338,14 @@ public class Manager{
      * This will also reset the manager once the file is written.
      */
 
-    public void confirmOrder(String origReq, String itemCategory){
+    public void confirmOrder(String origReq){
+        String[] requestParts = origReq.split(" ");
+        // String itemType = requestParts[0];
+        String itemCategory = requestParts[1];
+        // String count = requestParts[2];
+
         saveOrder(origReq, itemCategory);
-        purchaseItems();
+        purchaseItems(itemCategory);
         reset();
     }
 }
