@@ -28,7 +28,7 @@ package edu.ucalgary.ensf409;
 		 String code="";
 		 String quantity="";
 		 while(hold==-1){
-		 System.out.println("Please enter your desired furniture type or type 'Q' to quit:");
+		 System.out.println("Please enter your desired furniture type (e.g. 'desk lamp') or type 'Q' to quit:");
 		 this.request = System.console().readLine();
 		 if(this.request.equalsIgnoreCase("Q")){
 			 System.exit(1);
