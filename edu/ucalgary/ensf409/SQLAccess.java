@@ -2,7 +2,7 @@
  * @author Liana Goodman
  * @author Ethan Sengsavang
  * @author Amir Abdrakmanov
- * @version 1.8
+ * @version 2.0
  * @since 1.0
  */
 
@@ -11,6 +11,10 @@ package edu.ucalgary.ensf409;
 import java.sql.*;
 import java.util.ArrayList;
 
+/**
+ * Class to access, manipulate and modify the SQL databases. We are not doing
+ * anything to the data, just accessing.
+ */
 public class SQLAccess {
     private final String USERNAME;
     private final String PASSWORD;
@@ -276,14 +280,6 @@ public class SQLAccess {
     }
 
     /**
-     * Getter method for the current ResultSet
-     * @return current results
-     */
-    public ResultSet getResults () {
-        return this.results;
-    }
-
-    /**
      * Search for item based on table, type and a third characteristic parameter
      * make sure that all instances are found.
      * @param table the table to be searched
@@ -330,5 +326,46 @@ public class SQLAccess {
         }
 
         return null;
+    }
+
+    /**
+     * Getting all the possible manufacturers from the table
+     * @param table the table to search
+     * @param type the value of the type to filter by
+     * @return String array of the values that fit the criteria but only of the
+     * manufacturer id's
+     */
+    public String [] getManuIDs (String table, String type) {
+        String [][] tableResults = this.searchFor(table, "Type", type);
+        String [] fields = this.getFields(table);
+
+        int index = -1;
+        int i = 0;
+        for (String item : fields) {    // get the index at where the ID will be kept
+            if (item.equals("ManuID")) {
+                index = i;
+            }
+            i ++;
+        }
+
+        if (index == -1) {  // if there are no ManuIDs
+            System.out.println("Invalid table entry, cannot find ManuID");
+            System.exit(1);
+        }
+
+        String [] manuIDs = new String [tableResults.length];
+        for (int k = 0; k < tableResults.length; k++) {
+            manuIDs [k] = tableResults [k][index];  // getting the id's
+        }
+
+        ArrayList <String> filteredIDs = new ArrayList<String>();
+        for (int k = 0; k < manuIDs.length; k++) {
+            // if the ID is not already in the list then add it
+            if (!filteredIDs.contains(manuIDs[k])) {    
+                filteredIDs.add(manuIDs[k]);
+            }
+        }
+
+        return filteredIDs.toArray(new String [filteredIDs.size()]);
     }
 }
