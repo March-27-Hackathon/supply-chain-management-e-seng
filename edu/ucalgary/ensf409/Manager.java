@@ -5,7 +5,7 @@
  * @since 1.0
  */
 
-//package edu.ucalgary.ensf409;
+package edu.ucalgary.ensf409;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,14 +52,14 @@ public class Manager{
      * TODO: ensure data is sent in the correct order and format.
      *
      */
-    private void saveOrder(String origReq){
+    private void saveOrder(String origReq, String itemCategory){
         if(fileName == null){
             System.out.println("File name not specified.");
             System.exit(1);
         }
         FileIO orderWriter = new FileIO(fileName);
 		String [] temp = this.orderedParts.toArray(new String[0]);
-		orderWriter.write(temp,origReq, this.getPrice(temp));
+		orderWriter.write(temp,origReq, this.getPrice(temp, itemCategory));
     }
 
   
@@ -111,11 +111,11 @@ public class Manager{
     private String[] findCheapestItems(String itemType, String itemCategory){
         // Get all relevant ids for the item type.
         String[][] relevantRows = databaseAccess.searchFor(itemCategory, "Type", itemType);
-        String[] ids = new String[relevanatRows.length];
+        String[] ids = new String[relevantRows.length];
         String[] parts = isolateParts(relevantRows[0]);
 
         for(int index = 0; index < relevantRows.length; index++){
-            ids[i] = relevantRows[i][0]; // IDs are stored at index 0;
+            ids[index] = relevantRows[index][0]; // IDs are stored at index 0;
         }
 
         boolean[] missingParts = new boolean[parts.length];
@@ -146,11 +146,11 @@ public class Manager{
      */
     private String[] minimizePrice(String[] chosenIDs, String[] idPool, boolean[] missingParts, String itemCategory){
         // no need for additional parts? return with the previous ids.
-        boolean stillMissing = false;
+        boolean incomplete = false;
         for(boolean partMissing : missingParts){
-            stillMissing = stillMissing && partMissing;
+            incomplete = incomplete && partMissing;
         }
-        if(!stillMissing){
+        if(!incomplete){
             return chosenIDs;
         }
         // still need things but nowhere to pull from? failed - return
@@ -160,10 +160,10 @@ public class Manager{
 
         // Determine which parts still need to be searched for.
         // hash map pls
-        boolean[] stillMissing = missingParts;
+        boolean stillMissing[] = missingParts;
         if(chosenIDs.length != 0){
             stillMissing = new boolean[missingParts.length];
-            int id = chosenIDs[chosenIDs.length - 1];
+            String id = chosenIDs[chosenIDs.length - 1];
             String[] itemRow = databaseAccess.searchFor(itemCategory, "ID", id)[0];
             String[] itemParts = isolateParts(itemRow);
 
@@ -184,17 +184,17 @@ public class Manager{
             return null; // This combination cannot be used
         }
 
-        for(int index = 1; index < idPool; index++){
+        for(int index = 1; index < idPool.length; index++){
             // Preparing next comparison items
-            String[] chosen2 = arrAppen(chosenIDs, idPool[index]);
-            String[] pool1 = arrRemove(idPool, index);
+            String[] chosen2 = arrAppend(chosenIDs, idPool[index]);
+            String[] pool2 = arrRemove(idPool, index);
             String[] comp2 = minimizePrice(chosen2, pool2, stillMissing, itemCategory);
 
             if(comp2 == null){
                 continue; // This combination cannot be used
             }
 
-            if(getPrice(lowest) < getPrice(comp2)){
+            if(getPrice(lowest, itemCategory) < getPrice(comp2, itemCategory)){
                 lowest = comp2;
             }
         }
@@ -208,10 +208,10 @@ public class Manager{
         // ie. remove first two things and last two things
         
         // garbage
-        String[] returnArr = remove(row, 0);
-        returnArr = remove(returnArr, 0);
-        returnArr = remove(returnArr, returnArr.length-1);
-        returnArr = remove(returnArr, returnArr.legnth-1);
+        String[] returnArr = arrRemove(row, 0);
+        returnArr = arrRemove(returnArr, 0);
+        returnArr = arrRemove(returnArr, returnArr.length-1);
+        returnArr = arrRemove(returnArr, returnArr.length-1);
 
         return returnArr;
     }
@@ -219,7 +219,7 @@ public class Manager{
 
     private String[] arrAppend(String[] original, String item){
         String[] returnedArray = new String[original.length+1];
-        for(int index = 0; index < original; index++){
+        for(int index = 0; index < original.length; index++){
             returnedArray[index] = original[index];
         }
 
@@ -316,16 +316,20 @@ public class Manager{
 
             quantity--;
         }
+
+        return getPrice(orderedParts.toArray(new String[orderedParts.size()]), itemCategory);
     }
 
 
     /**
      * Purchases the items and removes the items from the database.
      * A purchased item has no need to be in the database anymore.
+     *
+     * @param itemCategory The category of the item
      */
-    private void purchaseItems(){
+    private void purchaseItems(String itemCategory){
         for(String id : orderedParts){
-            databaseAccess.removeFurniture();
+            databaseAccess.removeFurniture(itemCategory, id);
         }
     }
 
@@ -337,8 +341,15 @@ public class Manager{
      */
 
     public void confirmOrder(String origReq){
-        saveOrder(origReq);
-        purchaseItems();
-        reset();
+        String[] requestParts = origReq.split(" ");
+        // String itemType = requestParts[0];
+        String itemCategory = requestParts[1];
+        // String count = requestParts[2];
+
+        saveOrder(origReq, itemCategory);
+        purchaseItems(itemCategory);
+        // reset();
+        
+        databaseAccess.close();
     }
 }
