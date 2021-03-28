@@ -184,17 +184,17 @@ public class Manager{
             return null; // This combination cannot be used
         }
 
-        for(int index = 1; index < idPool; index++){
+        for(int index = 1; index < idPool.length; index++){
             // Preparing next comparison items
-            String[] chosen2 = arrAppen(chosenIDs, idPool[index]);
-            String[] pool1 = arrRemove(idPool, index);
+            String[] chosen2 = arrAppend(chosenIDs, idPool[index]);
+            String[] pool2 = arrRemove(idPool, index);
             String[] comp2 = minimizePrice(chosen2, pool2, stillMissing, itemCategory);
 
             if(comp2 == null){
                 continue; // This combination cannot be used
             }
 
-            if(getPrice(lowest) < getPrice(comp2)){
+            if(getPrice(lowest, itemCategory) < getPrice(comp2, itemCategory)){
                 lowest = comp2;
             }
         }
