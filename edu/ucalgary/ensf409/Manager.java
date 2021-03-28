@@ -219,7 +219,7 @@ public class Manager{
 
     private String[] arrAppend(String[] original, String item){
         String[] returnedArray = new String[original.length+1];
-        for(int index = 0; index < original; index++){
+        for(int index = 0; index < original.length; index++){
             returnedArray[index] = original[index];
         }
 
