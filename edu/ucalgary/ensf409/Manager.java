@@ -109,7 +109,21 @@ public class Manager{
      * @return A String array containing all ordered parts for the request.
      */
     private String[] findCheapestItems(String itemType, String itemCategory){
+        // Get all relevant ids for the item type.
+        String[][] relevantRows = databaseAccess.searchFor(itemCategory, "Type", itemType);
+        String[] ids = new String[relevanatRows.length];
+        String[] parts = isolateParts(relevantRows[0]);
 
+        for(int index = 0; index < relevantRows.length; index++){
+            ids[i] = relevantRows[i][0]; // IDs are stored at index 0;
+        }
+
+        boolean[] missingParts = new boolean[parts.length];
+        for(int index = 0; index < parts.length; index++){
+            missingParts[index] = true;
+        }
+        
+        return minimizePrice(new String[0], new String[0], missingParts, itemCategory);
     }
 
 
@@ -148,7 +162,7 @@ public class Manager{
         // hash map pls
         boolean[] stillMissing = missingParts;
         if(chosenIDs.length != 0){
-            stillMissing = new boolean[missingParts.length]
+            stillMissing = new boolean[missingParts.length];
             int id = chosenIDs[chosenIDs.length - 1];
             String[] itemRow = databaseAccess.searchFor(itemCategory, "ID", id)[0];
             String[] itemParts = isolateParts(itemRow);
@@ -251,7 +265,7 @@ public class Manager{
         // Ensure that the price field is handled
         int priceIndex = 0;
         for(String field : fields){
-            if(field.equals("Price"){
+            if(field.equals("Price")){
                 break;
             }
 
