@@ -1,2 +1,3 @@
 # ignore my vim garbage - es
 *.swp
+*.class
