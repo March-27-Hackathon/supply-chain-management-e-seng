@@ -203,7 +203,6 @@ public class Manager{
                 boolean currentState = hasPart[i-START_PADDING];
                 boolean partFound = lowestItem[i].equals(FLAG_HAS);
                 hasPart[i-START_PADDING] = currentState || partFound;
-                System.out.println("----" + currentState + " " + partFound);
             }
 
             lowestIDs = arrAppend(lowestIDs, lowestItem[ID_INDEX]);
@@ -213,7 +212,6 @@ public class Manager{
                 foundCheapest = foundCheapest && partCheck;
                 System.out.print(" " + partCheck);
             }
-            System.out.println(foundCheapest);
         }
 
         return lowestIDs;
