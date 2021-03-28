@@ -75,6 +75,5 @@ public class FileIO{ // Start of FileIO class
 			System.exit(1);
 		}
 		
-	}
-		
+    }			
 }

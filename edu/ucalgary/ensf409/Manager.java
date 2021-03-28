@@ -108,100 +108,102 @@ public class Manager{
      * @return A String array containing all ordered parts for the request.
      */
     private String[] findCheapestItems(String itemType, String itemCategory){
-        // Get all relevant ids for the item type.
-        String[][] relevantRows = databaseAccess.searchFor(itemCategory, "Type", itemType);
-        String[] ids = new String[relevantRows.length];
-        String[] parts = isolateParts(relevantRows[0]);
-
-        for(int index = 0; index < relevantRows.length; index++){
-            ids[index] = relevantRows[index][0]; // IDs are stored at index 0;
-        }
-
-        boolean[] missingParts = new boolean[parts.length];
-        for(int index = 0; index < parts.length; index++){
-            missingParts[index] = true;
-        }
+        String[] partNames = isolateParts(databaseAccess.getFields(itemCategory));
         
-        return minimizePrice(new String[0], new String[0], missingParts, itemCategory);
+        // Store, in an array which parts have been satisfied. (initialized false)
+        boolean hasPart[] = new boolean[partNames.length];
+        for(int index = 0; index < partNames.length; index++){
+            hasPart[index] = false;
+        }
+     
+        boolean foundCheapest = false;
+        String[] lowestIDs = new String[0];
+
+        final String FLAG_HAS = "Y";
+        final String FLAG_NOT_HAS = "N";
+        final int START_PADDING = 2;
+        final int END_PADDING = 2;
+
+        final int COST_INDEX = partNames.length + 3;
+        final int ID_INDEX = 0;
+        final double MAX = 9999999;
+        while(!foundCheapest){
+
+            // Get all items that contain some number of the missing parts
+            String potentialItems[][] = new String[0][partNames.length+4];
+            for(int index = 0; index < partNames.length; index++){
+                if(hasPart[index]){continue;}
+                String partName = partNames[index];
+                String[][] rows = databaseAccess.filter(itemCategory, itemType, partName, FLAG_HAS);
+                if(rows.length == 0){
+                    return new String[0];
+                }
+                for(String[] row : rows){
+                    if(orderedParts.size() > 0 && orderedParts.contains(row[0])){
+                        continue;
+                    }
+                    potentialItems = arrAppend(potentialItems, row);
+                }
+            }
+
+
+            // Find cheapest item per part
+            // ie. minimize price per part
+            double lowestCost = MAX;
+            String[] lowestItem = null;
+            for(int index = 0; index < potentialItems.length; index++){
+                int hasPartCount = 0;
+                String[] focusItem = potentialItems[index];
+                for(int j = START_PADDING; j < focusItem.length - END_PADDING; j++){
+                    if(focusItem[j].equals(FLAG_NOT_HAS)){
+                        continue;
+                    }
+
+                    hasPartCount++;
+                }
+                double totalCost = Double.parseDouble(focusItem[COST_INDEX]);
+                double costPerPart = totalCost / hasPartCount;
+
+                if(costPerPart > lowestCost){
+                    continue;
+                }
+
+                lowestCost = costPerPart;
+                lowestItem = focusItem;
+            }
+
+            if(lowestItem == null){
+                return new String[0];
+            }
+
+            // Check which parts still need to be found;
+            for(int i = START_PADDING; i < lowestItem.length - END_PADDING; i++){
+                boolean currentState = hasPart[i-START_PADDING];
+                boolean partFound = lowestItem[i].equals(FLAG_HAS);
+                hasPart[i-START_PADDING] = currentState || partFound;
+            }
+
+            lowestIDs = arrAppend(lowestIDs, lowestItem[ID_INDEX]);
+
+            foundCheapest = true;
+            for(boolean partCheck : hasPart){
+                foundCheapest = foundCheapest && partCheck;
+            }
+        }
+
+        return lowestIDs;
     }
 
 
     /**
-     * Recusively finds the set of ids that make a full item, with the lowest
-     * overall price.
+     * Isolates every part name that builds up the item.
+     * As the first and last two items are consistently information about the
+     * item, they can be removed.
      *
-     * @param chosenIDs The backlog of chosen IDs to determine price
-     *  - Needs to be empty when initially called
-     * @param idPool The pool of ids to choose new ids from
-     *  - Needs to be empty when initially called
-     * @param missingParts All parts that the item is missing before
-     * it becomes a complete part.
-     *  - Needs to have the same number of parts that make up that item,
-     *    all filled with true.
-     * @param itemCategory the overall category that the item falls under.
-     *  - This should be one of the tables in the database.
+     * @param row The row with all fields from the database.
      *
-     * @return The set with the lowest price.
+     * @return An array containing all part names.
      */
-    private String[] minimizePrice(String[] chosenIDs, String[] idPool, boolean[] missingParts, String itemCategory){
-        // no need for additional parts? return with the previous ids.
-        boolean complete = true;
-        for(boolean partMissing : missingParts){
-            complete = complete && !partMissing;
-        }
-        if(complete){
-            return chosenIDs;
-        }
-        // still need things but nowhere to pull from? failed - return
-        if(idPool.length == 0){
-            return new String[0];
-        }
-
-        // Determine which parts still need to be searched for.
-        // hash map pls
-        boolean stillMissing[] = missingParts;
-        if(chosenIDs.length != 0){
-            stillMissing = new boolean[missingParts.length];
-            String id = chosenIDs[chosenIDs.length - 1];
-            String[] itemRow = databaseAccess.searchFor(itemCategory, "ID", id)[0];
-            String[] itemParts = isolateParts(itemRow);
-
-            for(int i = 0; i < missingParts.length; i++){
-                boolean hasPart = itemParts[i].equals("Y");
-                stillMissing[i] = !hasPart && missingParts[i];
-                // This is only true if the row does not have the part 
-                // and the part is still missing.
-            }
-        }
-
-        // Preparing first comparison item
-        String[] chosen1 = arrAppend(chosenIDs, idPool[0]);
-        String[] pool1 = arrRemove(idPool, 0);
-
-        String[] lowest = minimizePrice(chosen1, pool1, stillMissing, itemCategory);
-        if(lowest.length == 0){
-            return new String[0]; // This combination cannot be used
-        }
-
-        for(int index = 1; index < idPool.length; index++){
-            // Preparing next comparison items
-            String[] chosen2 = arrAppend(chosenIDs, idPool[index]);
-            String[] pool2 = arrRemove(idPool, index);
-            String[] comp2 = minimizePrice(chosen2, pool2, stillMissing, itemCategory);
-
-            if(comp2 == null){
-                continue; // This combination cannot be used
-            }
-
-            if(getPrice(lowest, itemCategory) < getPrice(comp2, itemCategory)){
-                lowest = comp2;
-            }
-        }
-
-        return lowest;
-    }
-
-
     private String[] isolateParts(String[] row){
         // Stuff to ignore exists at index 0, 1, row.length - 1 and row.length - 2
         // ie. remove first two things and last two things
@@ -216,6 +218,14 @@ public class Manager{
     }
 
 
+    /**
+     * Appends a String to the end of a given String array.
+     *
+     * @param original The String array to append to
+     * @param item The String to append
+     * 
+     * @return The String array with the item appended at the ended
+     */
     private String[] arrAppend(String[] original, String item){
         String[] returnedArray = new String[original.length+1];
         for(int index = 0; index < original.length; index++){
@@ -227,11 +237,48 @@ public class Manager{
     }
 
 
+    /**
+     * Appends a String array to the end of a given 2D String array.
+     *
+     * @param original The 2D String array to append to.
+     * @param item The String array to append.
+     *
+     * @return The 2D String array with the new String array appended to it.
+     */
+    private String[][] arrAppend(String[][] original, String item[]){
+        String[][] returnedArray = new String[original.length+1][item.length];
+        for(int index = 0; index < original.length; index++){
+            returnedArray[index] = original[index];
+        }
+
+        returnedArray[original.length] = item;
+        return returnedArray;
+    }
+
+
+    /**
+     * Removes a specific object at a specific index.
+     * Also makes the array one element smaller.
+     *
+     * @param original The String array to remove items from.
+     * @param ignoreIndex The index of the item that needs to be removed.
+     *
+     * @return A smaller string array without the item at the given index.
+     */
     private String[] arrRemove(String[] original, int ignoreIndex){
         return arrRemove(original, original[ignoreIndex]);
     }
 
 
+    /**
+     * Removes a specific object within a String array.
+     * Also makes the array one element smaller.
+     *
+     * @param original The String array to remove items from.
+     * @param ignoreIndex The item that needs to be removed.
+     *
+     * @return A smaller string array without the specified item.
+     */
     private String[] arrRemove(String[] original, String item){
         String[] returnedArray = new String[original.length-1];
 
@@ -276,7 +323,7 @@ public class Manager{
             // :/
             String[] itemRow = databaseAccess.searchFor(itemCategory, "ID", id)[0];
             String priceStr = itemRow[priceIndex];
-            priceIndex += Double.parseDouble(priceStr);
+            totalCost += Double.parseDouble(priceStr);
         }
 
         return totalCost;
