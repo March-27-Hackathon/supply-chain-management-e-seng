@@ -12,6 +12,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.sql.SQLException;
 
+
+/**
+ * Manage data collected from the database and pass that data into the file
+ * writer if a possible order can be made.
+ * This will use information of the desired order from UserIO to call
+ * SQLAccess to query.
+ * This will determine the total cost, and the minimal cost for complete items.
+ *
+ * @author Ethan Sengsavang
+ */
 public class Manager{
     private SQLAccess databaseAccess;
     private ArrayList<String> orderedParts;
