@@ -231,6 +231,14 @@ public class Manager{
     }
 
 
+    /**
+     * Appends a String array to the end of a given 2D String array.
+     *
+     * @param original The 2D String array to append to.
+     * @param item The String array to append.
+     *
+     * @return The 2D String array with the new String array appended to it.
+     */
     private String[][] arrAppend(String[][] original, String item[]){
         String[][] returnedArray = new String[original.length+1][item.length];
         for(int index = 0; index < original.length; index++){
