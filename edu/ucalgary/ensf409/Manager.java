@@ -192,7 +192,7 @@ public class Manager{
                 }
 
                 // DEBUG
-                System.out.println(costPerPart + " " + focusItem[ID_INDEX] + " " + focusItem[COST_INDEX] + " " + hasPartCount);
+                // System.out.println(costPerPart + " " + focusItem[ID_INDEX] + " " + focusItem[COST_INDEX] + " " + hasPartCount);
 
                 lowestCost = costPerPart;
                 lowestItem = focusItem;
@@ -218,9 +218,9 @@ public class Manager{
         }
 
         // DEBUG
-        for(String id: lowestIDs){
+        /*for(String id: lowestIDs){
             System.out.println(id);
-        }
+        }//*/
         return lowestIDs;
     }
 
