@@ -24,7 +24,6 @@
 		 int quan=0;
 		 double hold=-1;
 		 String code="";
-		 String noun=null;
 		 String quantity;
 		 while(hold==-1){
 		 System.out.println("Please enter your desired furniture type:");
@@ -34,7 +33,6 @@
 		 this.request=this.request.trim();
 		String [] items=this.request.split(" ");
 		 quantity=quantity.trim();
-		 noun = new String(items[1]);
 		 code+=items[0].charAt(0);
 		 code+=items[1].charAt(0);
 		 if(items[0]==null||items[1]==null){
@@ -76,7 +74,7 @@
 		 this.request+=" ";
 		 this.request+=quantity;
 		 this.manage.setFileName(code);
-		 this.confirm(hold, noun);
+		 this.confirm(hold);
 	 }
 	 /**
 	 Private helper function whose job is to initialize the instance of Manager
@@ -98,14 +96,14 @@
 	 and the data base is updated if 'n' then the program ends without creating the orderform 
 	 and does not update the database otherwise it will continue asking the user
 	 */
-	 private void confirm(double value, String noun){
+	 private void confirm(double value){
 		 System.out.println("Cheapest price found was: " + value);
 		 while(true){
 		 System.out.println("Confirm order?: (y/n)");
 		 String response=System.console().readLine();
 		 response=response.trim();
 		 if(response.equalsIgnoreCase("y")){
-			 this.manage.confirmOrder(this.request, noun);
+			 this.manage.confirmOrder(this.request);
 			 System.out.println("Order confirmed successfully, Please see order form");
 			 break;
 		 }else if(response.equalsIgnoreCase("n")){
