@@ -12,6 +12,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.sql.SQLException;
 
+
+/**
+ * Manage data collected from the database and pass that data into the file
+ * writer if a possible order can be made.
+ * This will use information of the desired order from UserIO to call
+ * SQLAccess to query.
+ * This will determine the total cost, and the minimal cost for complete items.
+ *
+ * @author Ethan Sengsavang
+ */
 public class Manager{
     private SQLAccess databaseAccess;
     private ArrayList<String> orderedParts;
@@ -46,12 +56,15 @@ public class Manager{
 
 
     /**
-	 * @param origReq the original request made by the user
      * Save the order with the cheapest necessary items within the database to
      * a .text file.
      * This will invoke a method within FileIO to save the files.
      * Information is sent in as raw data.
      *
+	 * @param origReq the original request made by the user
+     *
+     * @throws SQLException
+     * @throws Exception
      */
     private void saveOrder(String origReq, String itemCategory) throws SQLException, Exception{
         if(fileName == null){
@@ -74,10 +87,14 @@ public class Manager{
 	
     
     /**
-	 * @param descript String adjective used to describe item, i.e. "mesh" or "executive"
-	 * @param item String noun that describes the item, i.e "chair" or "lamp"
 	 * Simple function that calls a database function to find a list of
 	 * manufacturers based on the desired item
+     *
+	 * @param descript String adjective used to describe item, i.e. "mesh" or "executive"
+	 * @param item String noun that describes the item, i.e "chair" or "lamp"
+     *
+     * @throws SQLException
+     * @throws Exception
 	 */
 	public String[] getManufacturersList(String descript, String item) throws SQLException, Exception{
 		//return this.databaseAccess.getManuIDs(item, descript);
@@ -117,6 +134,9 @@ public class Manager{
      *  this method should be called twice.
      *
      * @return A String array containing all ordered parts for the request.
+     *
+     * @throws SQLException
+     * @throws Exception
      */
     private String[] findCheapestItems(String itemType, String itemCategory) throws SQLException, Exception{
         String[] fieldNames = databaseAccess.getFields(itemCategory);
@@ -181,7 +201,7 @@ public class Manager{
                 }
 
                 // DEBUG
-                System.out.println(costPerPart + " " + focusItem[ID_INDEX] + " " + focusItem[COST_INDEX] + " " + hasPartCount);
+                // System.out.println(costPerPart + " " + focusItem[ID_INDEX] + " " + focusItem[COST_INDEX] + " " + hasPartCount);
 
                 lowestCost = costPerPart;
                 lowestItem = focusItem;
@@ -207,9 +227,9 @@ public class Manager{
         }
 
         // DEBUG
-        for(String id: lowestIDs){
+        /*for(String id: lowestIDs){
             System.out.println(id);
-        }
+        }//*/
         return lowestIDs;
     }
 
@@ -323,6 +343,9 @@ public class Manager{
      *  - This should be one of the tables in the Database.
      *
      * @return The combined cost of each specified part.
+     *
+     * @throws SQLException
+     * @throws Exception
      */
     private double getPrice(String[] ids, String itemCategory) throws SQLException, Exception{
         String[] fields = databaseAccess.getFields(itemCategory);
@@ -358,6 +381,9 @@ public class Manager{
      * @return -1.00 if the item does not exist,
      *         -2.00 if the item exists but cannot be made,
      *         the price otherwise.
+     *
+     * @throws SQLException
+     * @throws Exception
      */
     public double parseOrder(String itemType, String itemCategory, int quantity) throws SQLException, Exception{
         // Check if the inputs are valid.
@@ -391,6 +417,9 @@ public class Manager{
      * A purchased item has no need to be in the database anymore.
      *
      * @param itemCategory The category of the item
+     *
+     * @throws SQLException
+     * @throws Exception
      */
     private void purchaseItems(String itemCategory) throws SQLException, Exception{
         for(String id : orderedParts){
@@ -403,6 +432,9 @@ public class Manager{
      * Confirms the order if the user wishes to.
      * This will remove all bought instances within the database.
      * This will also reset the manager once the file is written.
+     *
+     * @throws SQLException
+     * @throws Exception
      */
 
     public void confirmOrder(String origReq) throws SQLException, Exception{
