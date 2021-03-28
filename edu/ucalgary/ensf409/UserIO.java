@@ -26,7 +26,7 @@ package edu.ucalgary.ensf409;
 		 int quan=0;
 		 double hold=-1;
 		 String code="";
-		 String quantity;
+		 String quantity="";
 		 while(hold==-1){
 		 System.out.println("Please enter your desired furniture type:");
 		 this.request = System.console().readLine();
