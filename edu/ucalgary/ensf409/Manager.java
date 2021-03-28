@@ -316,6 +316,8 @@ public class Manager{
 
             quantity--;
         }
+
+        return getPrice(orderedParts, itemCategory);
     }
 
 
