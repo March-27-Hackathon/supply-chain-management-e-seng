@@ -90,9 +90,9 @@ package edu.ucalgary.ensf409;
 	 private void initializeManage(){
 		 System.out.println("Please Enter username:");
 		 String user=System.console().readLine();
-		 System.out.println("Please Enter password");
+		 System.out.println("Please Enter password:");
 		 String pass=System.console().readLine();
-		 System.out.println("Please Enter DataBase URL in the form (jdbc:mysql://localhost/INVENTORY)");
+		 System.out.println("Please Enter database URL in the form (jdbc:mysql://localhost/INVENTORY):");
 		 String dburl=System.console().readLine();
 		 this.manage= new Manager(user,pass,dburl);
 	 }
