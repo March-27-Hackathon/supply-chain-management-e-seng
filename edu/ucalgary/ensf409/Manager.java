@@ -97,7 +97,21 @@ public class Manager{
      * @return A String array containing all ordered parts for the request.
      */
     private String[] findCheapestItems(String itemType, String itemCategory){
+        // Get all relevant ids for the item type.
+        String[][] relevantRows = databaseAccess.searchFor(itemCategory, "Type", itemType);
+        String[] ids = new String[relevanatRows.length];
+        String[] parts = isolateParts(relevantRows[0]);
 
+        for(int index = 0; index < relevantRows.length; index++){
+            ids[i] = relevantRows[i][0]; // IDs are stored at index 0;
+        }
+
+        boolean[] missingParts = new boolean[parts.length];
+        for(int index = 0; index < parts.length; index++){
+            missingParts[index] = true;
+        }
+        
+        return minimizePrice(new String[0], new String[0], missingParts, itemCategory);
     }
 
 
