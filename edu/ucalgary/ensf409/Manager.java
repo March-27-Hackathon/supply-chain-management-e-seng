@@ -107,12 +107,14 @@ public class Manager{
      *
      * @return A String array containing all ordered parts for the request.
      */
+    /*
     private String[] findCheapestItems(String itemType, String itemCategory){
         // Get all relevant ids for the item type.
         String[][] relevantRows = databaseAccess.searchFor(itemCategory, "Type", itemType);
         String[] ids = new String[relevantRows.length];
-        String[] parts = isolateParts(relevantRows[0]);
+        String[] parts = isolateParts(databaseAccess.getFields(itemCategory));
 
+        /*
         for(int index = 0; index < relevantRows.length; index++){
             ids[index] = relevantRows[index][0]; // IDs are stored at index 0;
         }
@@ -120,9 +122,101 @@ public class Manager{
         boolean[] missingParts = new boolean[parts.length];
         for(int index = 0; index < parts.length; index++){
             missingParts[index] = true;
+            System.out.println(parts[index]);
+        }// *//*
+
+        final String HAS_PART = "Y";
+        for(String part : parts){
+            String partIDs[][] = databaseAccess.filter(itemCategory, itemType, part, HAS_PART);
+            
         }
         
-        return minimizePrice(new String[0], new String[0], missingParts, itemCategory);
+        // return minimizePrice(new String[0], ids, missingParts, itemCategory);
+        return new String[0];
+    }*/
+
+
+    private String[] findCheapestItems(String itemType, String itemCategory){
+        String[] partNames = isolateParts(databaseAccess.getFields(itemCategory));
+        
+        // Store, in an array which parts have been satisfied. (initialized false)
+        boolean hasPart[] = new boolean[partNames.length];
+        for(int index = 0; index < partNames.length; index++){
+            hasPart[index] = false;
+        }
+     
+        boolean foundCheapest = false;
+        String[] lowestIDs = new String[0];
+
+        final String FLAG_HAS = "Y";
+        final String FLAG_NOT_HAS = "N";
+        final int START_PADDING = 2;
+        final int END_PADDING = 2;
+
+        final int COST_INDEX = partNames.length + 3;
+        final int ID_INDEX = 0;
+        final double MAX = 9999999;
+        while(!foundCheapest){
+
+            // Get all items that contain some number of the missing parts
+            String potentialItems[][] = new String[0][partNames.length+4];
+            for(int index = 0; index < partNames.length; index++){
+                if(hasPart[index]){continue;}
+                String partName = partNames[index];
+                String[][] rows = databaseAccess.filter(itemCategory, itemType, partName, FLAG_HAS);
+                if(rows.length == 0){
+                    return new String[0];
+                }
+                for(String[] row : rows){
+                    potentialItems = arrAppend(potentialItems, row);
+                }
+            }
+
+
+            // Find cheapest item per part
+            // ie. minimize price per part
+            double lowestCost = MAX;
+            String[] lowestItem = null;
+            for(int index = 0; index < potentialItems.length; index++){
+                int hasPartCount = 0;
+                String[] focusItem = potentialItems[index];
+                for(int j = START_PADDING; j < focusItem.length - END_PADDING; j++){
+                    if(focusItem[j].equals(FLAG_NOT_HAS)){
+                        continue;
+                    }
+
+                    hasPartCount++;
+                }
+                double totalCost = Double.parseDouble(focusItem[COST_INDEX]);
+                double costPerPart = totalCost / hasPartCount;
+
+                if(costPerPart > lowestCost){
+                    continue;
+                }
+
+                lowestCost = costPerPart;
+                lowestItem = focusItem;
+            }
+
+            // Check which parts still need to be found;
+            for(int i = START_PADDING; i < lowestItem.length - END_PADDING; i++){
+                boolean currentState = hasPart[i-START_PADDING];
+                boolean partFound = lowestItem[i].equals(FLAG_HAS);
+                hasPart[i-START_PADDING] = currentState || partFound;
+                System.out.println("----" + currentState + " " + partFound);
+            }
+
+            lowestIDs = arrAppend(lowestIDs, lowestItem[ID_INDEX]);
+
+            foundCheapest = true;
+            for(boolean partCheck : hasPart){
+                foundCheapest = foundCheapest && partCheck;
+                System.out.print(" " + partCheck);
+            }
+            System.out.println(foundCheapest);
+        }
+
+        return lowestIDs;
     }
 
 
@@ -143,6 +237,7 @@ public class Manager{
      *
      * @return The set with the lowest price.
      */
+    /*
     private String[] minimizePrice(String[] chosenIDs, String[] idPool, boolean[] missingParts, String itemCategory){
         // no need for additional parts? return with the previous ids.
         boolean complete = true;
@@ -150,10 +245,12 @@ public class Manager{
             complete = complete && !partMissing;
         }
         if(complete){
+            System.out.println(chosenIDs.length);
             return chosenIDs;
         }
         // still need things but nowhere to pull from? failed - return
         if(idPool.length == 0){
+            System.out.println("stinky");
             return new String[0];
         }
 
@@ -199,7 +296,12 @@ public class Manager{
         }
 
         return lowest;
-    }
+    }// */
+
+
+    /*private String[] minimizePrice(String itemType, String itemCategory, String part){
+    
+    }//*/
 
 
     private String[] isolateParts(String[] row){
