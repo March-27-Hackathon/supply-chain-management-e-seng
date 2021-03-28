@@ -181,7 +181,6 @@ public class Manager{
             foundCheapest = true;
             for(boolean partCheck : hasPart){
                 foundCheapest = foundCheapest && partCheck;
-                System.out.print(" " + partCheck);
             }
         }
 
