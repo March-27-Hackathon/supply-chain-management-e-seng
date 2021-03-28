@@ -20,11 +20,10 @@ public class Manager{
     private String dbUrl;
     private String fileName;
 
-    public Manager(String dbUsername, String dbPassword, String dbUrl, String fileName){
+    public Manager(String dbUsername, String dbPassword, String dbUrl){
         this.dbUsername = dbUsername;
         this.dbPassword = dbPassword;
         this.dbUrl = dbUrl;
-        this.fileName = fileName;
         reset();
     }
 
