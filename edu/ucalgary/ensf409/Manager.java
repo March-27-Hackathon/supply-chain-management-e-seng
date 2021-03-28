@@ -20,6 +20,11 @@ public class Manager{
     private String dbUrl;
     private String fileName;
 
+    public static void main (String [] args) {
+        Manager manager = new Manager ("ensf409", "ensf409", "jdbc:mysql://localhost/INVENTORY");
+        String [] arr = manager.findCheapestItems("mesh", "chair");
+    }
+
     public Manager(String dbUsername, String dbPassword, String dbUrl){
         this.dbUsername = dbUsername;
         this.dbPassword = dbPassword;
@@ -99,7 +104,7 @@ public class Manager{
      * @param itemType The specific type of the item that is desired.
      *  - This word should be contained within the "type" field within each
      *    table.
-     * @param itemCategory The overall category that the item falls under.
+     * @param table The overall category that the item falls under.
      *  - This should be one of the tables in the Database.
      *
      *  eg. if the query is: <code>mesh chair, 2</code>,
@@ -107,22 +112,76 @@ public class Manager{
      *
      * @return A String array containing all ordered parts for the request.
      */
-    private String[] findCheapestItems(String itemType, String itemCategory){
-        // Get all relevant ids for the item type.
-        String[][] relevantRows = databaseAccess.searchFor(itemCategory, "Type", itemType);
-        String[] ids = new String[relevantRows.length];
-        String[] parts = isolateParts(relevantRows[0]);
+    private String[] findCheapestItems(String itemType, String table){
+        // System.out.println("Looking for cheapest item");
+        // Get all relevant information
+        String [] fields = this.databaseAccess.getFields (table);
+        String [][] data = this.databaseAccess.filter (table, itemType, fields [2], "Y");
 
-        for(int index = 0; index < relevantRows.length; index++){
-            ids[index] = relevantRows[index][0]; // IDs are stored at index 0;
+        // System.out.println("Data size: " + data.length);
+
+        ArrayList<String> componentsGotten = new ArrayList<String>();
+        // componentsGotten.add(fields[2]);
+
+        // initialize string that will contain the number of components we need
+        ArrayList <String> ids = new ArrayList<String>();
+        // find the cheapest item from the current data
+        int z = 0;
+        while (true) {
+            int cheapest = 10000;
+            int index = -1;
+            for (int i = 0; i < data.length; i++) {
+                if (Integer.valueOf(data[i][data[i].length - 2]) < cheapest) {
+                    cheapest = Integer.valueOf(data[i][data[i].length - 2]);
+                    index = i;
+                }
+            }
+            System.out.println("Cheapest price is: " + cheapest);
+            // have index of the cheapes item, now we must see whether it has more than 1 component
+            // Getting which components we have
+            String [] doNotHaveComponents = new String [fields.length - 4];
+            
+            int l = 0;
+            for (int i = 0; i < fields.length; i++) {
+                // System.out.println("Component Values: " + data [index][i]);
+                if (data [index][i].equals("Y")) {
+                    // System.out.println("Adding to Components Gotten");
+                    componentsGotten.add(fields[i]);
+                }
+                else if (!componentsGotten.contains(fields[i]) && data[index][i].equals("N")) {
+                    // System.out.println("Adding to not gotten");
+                    doNotHaveComponents [l] = fields [i];
+                    l ++;
+                } 
+                // System.out.println (!componentsGotten.contains(data[index][i]));
+            }
+            // System.out.println("Found Components: " + componentsGotten.size());
+            // System.out.println("Missing components: " + l);
+
+            
+
+            // update data to look for the missing components
+            if (l == 0) {
+                break;
+            } else {
+                data = this.databaseAccess.filter (table, itemType, doNotHaveComponents[0], "Y");
+            }
+
+            // Add the item to our ids to be added
+            ids.add(data[index][0]);
+            System.out.println("Added data id: " + data[index][0]);
+
+            // loop again until we have all the components to build an item
+            // z++;
+            // if (z > 3) {
+            //     break;
+            // }
         }
 
-        boolean[] missingParts = new boolean[parts.length];
-        for(int index = 0; index < parts.length; index++){
-            missingParts[index] = true;
-        }
-        
-        return minimizePrice(new String[0], new String[0], missingParts, itemCategory);
+        // make sure there are no duplicate ids and make sure it is not in ordered parts
+        // compare price per number of functioning parts and use that relative parts as a comparison
+
+        return ids.toArray(new String [ids.size()]);
     }
 
 
