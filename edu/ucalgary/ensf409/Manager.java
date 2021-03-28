@@ -64,7 +64,7 @@ public class Manager{
      * Finds the cheapest desired item and return all relevent IDs.
      *
      * As compete items are determined based off a non-zero number of items
-     * satisfying all properties of an object, this will compare every
+     * satisfying all parts of an object, this will compare every
      * combination of possible peices in attempt to minimize the total cost only.
      *
      * A completed desired item will be returned as a String array. The length
