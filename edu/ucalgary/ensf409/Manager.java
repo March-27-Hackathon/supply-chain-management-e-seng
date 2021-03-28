@@ -317,7 +317,7 @@ public class Manager{
             quantity--;
         }
 
-        return getPrice(orderedParts, itemCategory);
+        return getPrice(orderedParts.toArray(new String[orderedParts.size()]), itemCategory);
     }
 
 
