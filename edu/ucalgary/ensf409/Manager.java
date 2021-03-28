@@ -163,7 +163,7 @@ public class Manager{
         boolean stillMissing[] = missingParts;
         if(chosenIDs.length != 0){
             stillMissing = new boolean[missingParts.length];
-            int id = chosenIDs[chosenIDs.length - 1];
+            String id = chosenIDs[chosenIDs.length - 1];
             String[] itemRow = databaseAccess.searchFor(itemCategory, "ID", id)[0];
             String[] itemParts = isolateParts(itemRow);
 
