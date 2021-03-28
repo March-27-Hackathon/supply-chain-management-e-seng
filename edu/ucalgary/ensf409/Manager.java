@@ -107,35 +107,6 @@ public class Manager{
      *
      * @return A String array containing all ordered parts for the request.
      */
-    /*
-    private String[] findCheapestItems(String itemType, String itemCategory){
-        // Get all relevant ids for the item type.
-        String[][] relevantRows = databaseAccess.searchFor(itemCategory, "Type", itemType);
-        String[] ids = new String[relevantRows.length];
-        String[] parts = isolateParts(databaseAccess.getFields(itemCategory));
-
-        /*
-        for(int index = 0; index < relevantRows.length; index++){
-            ids[index] = relevantRows[index][0]; // IDs are stored at index 0;
-        }
-
-        boolean[] missingParts = new boolean[parts.length];
-        for(int index = 0; index < parts.length; index++){
-            missingParts[index] = true;
-            System.out.println(parts[index]);
-        }// *//*
-
-        final String HAS_PART = "Y";
-        for(String part : parts){
-            String partIDs[][] = databaseAccess.filter(itemCategory, itemType, part, HAS_PART);
-            
-        }
-        
-        // return minimizePrice(new String[0], ids, missingParts, itemCategory);
-        return new String[0];
-    }*/
-
-
     private String[] findCheapestItems(String itemType, String itemCategory){
         String[] partNames = isolateParts(databaseAccess.getFields(itemCategory));
         
@@ -216,90 +187,6 @@ public class Manager{
 
         return lowestIDs;
     }
-
-
-    /**
-     * Recusively finds the set of ids that make a full item, with the lowest
-     * overall price.
-     *
-     * @param chosenIDs The backlog of chosen IDs to determine price
-     *  - Needs to be empty when initially called
-     * @param idPool The pool of ids to choose new ids from
-     *  - Needs to be empty when initially called
-     * @param missingParts All parts that the item is missing before
-     * it becomes a complete part.
-     *  - Needs to have the same number of parts that make up that item,
-     *    all filled with true.
-     * @param itemCategory the overall category that the item falls under.
-     *  - This should be one of the tables in the database.
-     *
-     * @return The set with the lowest price.
-     */
-    /*
-    private String[] minimizePrice(String[] chosenIDs, String[] idPool, boolean[] missingParts, String itemCategory){
-        // no need for additional parts? return with the previous ids.
-        boolean complete = true;
-        for(boolean partMissing : missingParts){
-            complete = complete && !partMissing;
-        }
-        if(complete){
-            System.out.println(chosenIDs.length);
-            return chosenIDs;
-        }
-        // still need things but nowhere to pull from? failed - return
-        if(idPool.length == 0){
-            System.out.println("stinky");
-            return new String[0];
-        }
-
-        // Determine which parts still need to be searched for.
-        // hash map pls
-        boolean stillMissing[] = missingParts;
-        if(chosenIDs.length != 0){
-            stillMissing = new boolean[missingParts.length];
-            String id = chosenIDs[chosenIDs.length - 1];
-            String[] itemRow = databaseAccess.searchFor(itemCategory, "ID", id)[0];
-            String[] itemParts = isolateParts(itemRow);
-
-            for(int i = 0; i < missingParts.length; i++){
-                boolean hasPart = itemParts[i].equals("Y");
-                stillMissing[i] = !hasPart && missingParts[i];
-                // This is only true if the row does not have the part 
-                // and the part is still missing.
-            }
-        }
-
-        // Preparing first comparison item
-        String[] chosen1 = arrAppend(chosenIDs, idPool[0]);
-        String[] pool1 = arrRemove(idPool, 0);
-
-        String[] lowest = minimizePrice(chosen1, pool1, stillMissing, itemCategory);
-        if(lowest.length == 0){
-            return new String[0]; // This combination cannot be used
-        }
-
-        for(int index = 1; index < idPool.length; index++){
-            // Preparing next comparison items
-            String[] chosen2 = arrAppend(chosenIDs, idPool[index]);
-            String[] pool2 = arrRemove(idPool, index);
-            String[] comp2 = minimizePrice(chosen2, pool2, stillMissing, itemCategory);
-
-            if(comp2 == null){
-                continue; // This combination cannot be used
-            }
-
-            if(getPrice(lowest, itemCategory) < getPrice(comp2, itemCategory)){
-                lowest = comp2;
-            }
-        }
-
-        return lowest;
-    }// */
-
-
-    /*private String[] minimizePrice(String itemType, String itemCategory, String part){
-    
-    }//*/
 
 
     private String[] isolateParts(String[] row){
