@@ -52,14 +52,14 @@ public class Manager{
      * TODO: ensure data is sent in the correct order and format.
      *
      */
-    private void saveOrder(String origReq){
+    private void saveOrder(String origReq, String itemCategory){
         if(fileName == null){
             System.out.println("File name not specified.");
             System.exit(1);
         }
         FileIO orderWriter = new FileIO(fileName);
 		String [] temp = this.orderedParts.toArray(new String[0]);
-		orderWriter.write(temp,origReq, this.getPrice(temp));
+		orderWriter.write(temp,origReq, this.getPrice(temp, itemCategory));
     }
 
   
@@ -336,8 +336,8 @@ public class Manager{
      * This will also reset the manager once the file is written.
      */
 
-    public void confirmOrder(String origReq){
-        saveOrder(origReq);
+    public void confirmOrder(String origReq, String itemCategory){
+        saveOrder(origReq, itemCategory);
         purchaseItems();
         reset();
     }
