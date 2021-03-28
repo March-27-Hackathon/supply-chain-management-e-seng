@@ -189,6 +189,15 @@ public class Manager{
     }
 
 
+    /**
+     * Isolates every part name that builds up the item.
+     * As the first and last two items are consistently information about the
+     * item, they can be removed.
+     *
+     * @param row The row with all fields from the database.
+     *
+     * @return An array containing all part names.
+     */
     private String[] isolateParts(String[] row){
         // Stuff to ignore exists at index 0, 1, row.length - 1 and row.length - 2
         // ie. remove first two things and last two things
