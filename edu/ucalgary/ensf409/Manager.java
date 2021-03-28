@@ -5,7 +5,7 @@
  * @since 1.0
  */
 
-package edu.ucalgary.ensf409;
+//package edu.ucalgary.ensf409;
 
 import java.util.ArrayList;
 
@@ -57,7 +57,8 @@ public class Manager{
             System.exit(1);
         }
         FileIO orderWriter = new FileIO(fileName);
-		orderWriter.write(this.orderedParts.toArray(),origReq, this.getPrice(this.orderedParts));
+		String [] temp = this.orderedParts.toArray(new String[0]);
+		orderWriter.write(temp,origReq, this.getPrice(temp));
     }
 	/**
 	@param fileName String parameter to set fileName
@@ -66,6 +67,17 @@ public class Manager{
 	public void setFileName(String fileName){
 	this.fileName=fileName;
 	}
+	/**
+	@param descript String adjective used to describe item, i.e. "mesh" or "executive"
+	@param item String noun that describes the item, i.e "chair" or "lamp"
+	Simple function that calls a database function to find a list of
+	manufacturers based on the desired item
+	*/
+	public String[] getManufacturersList(String descript, String item){
+		return this.databaseAccess.getManuIDs(item, descript);
+	}
+
+
 
     /**
      * Finds the cheapest desired item and return all relevent IDs.
@@ -148,7 +160,7 @@ public class Manager{
      */
     private void purchaseItems(){
         for(String id : orderedParts){
-            databaseAccess.removeFurniture()
+            databaseAccess.removeFurniture();
         }
     }
 
