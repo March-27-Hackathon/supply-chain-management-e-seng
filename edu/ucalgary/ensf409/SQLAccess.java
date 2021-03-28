@@ -97,7 +97,7 @@ public class SQLAccess {
     /**
      * Closes connection to the database and the ResultSet used throughout the class
      */
-    private void close () {
+    public void close () {
         try {
             this.dbConnection.close();
             if (this.results != null) {
