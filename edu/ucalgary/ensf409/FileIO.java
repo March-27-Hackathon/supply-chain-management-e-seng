@@ -4,7 +4,7 @@
  * @version 1.0
  * @since 1.0
  */
- //package edu.ucalgary.ensf409;
+package edu.ucalgary.ensf409;
 import java.io.*;
 /**
 Dedicated class for handling the writing to the output file
