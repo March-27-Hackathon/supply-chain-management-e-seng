@@ -71,10 +71,11 @@
 			 System.exit(1);
 		 }
 		 }
+		 String noun=new String(this.request);
 		 this.request+=" ";
 		 this.request+=quantity;
 		 this.manage.setFileName(code);
-		 this.confirm(hold);
+		 this.confirm(hold, noun);
 	 }
 	 /**
 	 Private helper function whose job is to initialize the instance of Manager
@@ -96,14 +97,14 @@
 	 and the data base is updated if 'n' then the program ends without creating the orderform 
 	 and does not update the database otherwise it will continue asking the user
 	 */
-	 private void confirm(double value){
+	 private void confirm(double value, String noun){
 		 System.out.println("Cheapest price found was: " + value);
 		 while(true){
 		 System.out.println("Confirm order?: (y/n)");
 		 String response=System.console().readLine();
 		 response=response.trim();
 		 if(response.equalsIgnoreCase("y")){
-			 this.manage.confirmOrder(this.request);
+			 this.manage.confirmOrder(this.request, noun);
 			 System.out.println("Order confirmed successfully, Please see order form");
 			 break;
 		 }else if(response.equalsIgnoreCase("n")){
