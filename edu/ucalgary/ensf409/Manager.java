@@ -238,7 +238,8 @@ public class Manager{
 
         double totalCost = 0;
         for(String id : ids){
-            String[] itemRow = databaseAccess.searchFor(itemCategory, "ID", id);
+            // :/
+            String[] itemRow = databaseAccess.searchFor(itemCategory, "ID", id)[0];
             String priceStr = itemRow[priceIndex];
             priceIndex += Double.parseDouble(priceStr);
         }
