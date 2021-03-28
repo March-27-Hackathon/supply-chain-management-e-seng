@@ -1,7 +1,8 @@
 /**
  * @author Amir Abdrakmanov, Ethan Sengsavang, Liana Goodman
  *
- * @version 1.0
+ * @version 1.1 - Exception handling
+ * 1.0 - Basic functionality
  * @since 1.0
  */
 
@@ -9,6 +10,7 @@ package edu.ucalgary.ensf409;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.sql.SQLException;
 
 public class Manager{
     private SQLAccess databaseAccess;
@@ -20,7 +22,8 @@ public class Manager{
     private String dbUrl;
     private String fileName;
 
-    public Manager(String dbUsername, String dbPassword, String dbUrl){
+
+    public Manager(String dbUsername, String dbPassword, String dbUrl) throws SQLException, Exception{
         this.dbUsername = dbUsername;
         this.dbPassword = dbPassword;
         this.dbUrl = dbUrl;
@@ -31,7 +34,7 @@ public class Manager{
     /**
      * Resets the Manager instance, removing previous history.
      */
-    private void reset(){
+    private void reset() throws SQLException, Exception{
         if(databaseAccess != null){
             databaseAccess.close();
         }
@@ -48,10 +51,9 @@ public class Manager{
      * a .text file.
      * This will invoke a method within FileIO to save the files.
      * Information is sent in as raw data.
-     * TODO: ensure data is sent in the correct order and format.
      *
      */
-    private void saveOrder(String origReq, String itemCategory){
+    private void saveOrder(String origReq, String itemCategory) throws SQLException, Exception{
         if(fileName == null){
             System.out.println("File name not specified.");
             System.exit(1);
@@ -77,7 +79,7 @@ public class Manager{
 	 * Simple function that calls a database function to find a list of
 	 * manufacturers based on the desired item
 	 */
-	public String[] getManufacturersList(String descript, String item){
+	public String[] getManufacturersList(String descript, String item) throws SQLException, Exception{
 		//return this.databaseAccess.getManuIDs(item, descript);
 		String [] temp = this.databaseAccess.getManuID(item, descript);
 		String [] [] [] arrtemp= new String[temp.length];
@@ -108,7 +110,7 @@ public class Manager{
      * @param itemType The specific type of the item that is desired.
      *  - This word should be contained within the "type" field within each
      *    table.
-     * @param itemCategory The overall category that the item falls under.
+     * @param table The overall category that the item falls under.
      *  - This should be one of the tables in the Database.
      *
      *  eg. if the query is: <code>mesh chair, 2</code>,
@@ -116,8 +118,9 @@ public class Manager{
      *
      * @return A String array containing all ordered parts for the request.
      */
-    private String[] findCheapestItems(String itemType, String itemCategory){
-        String[] partNames = isolateParts(databaseAccess.getFields(itemCategory));
+    private String[] findCheapestItems(String itemType, String itemCategory) throws SQLException, Exception{
+        String[] fieldNames = databaseAccess.getFields(itemCategory);
+        String[] partNames = isolateParts(fieldNames);
         
         // Store, in an array which parts have been satisfied. (initialized false)
         boolean hasPart[] = new boolean[partNames.length];
@@ -133,7 +136,7 @@ public class Manager{
         final int START_PADDING = 2;
         final int END_PADDING = 2;
 
-        final int COST_INDEX = partNames.length + 3;
+        final int COST_INDEX = fieldNames.length - 2;
         final int ID_INDEX = 0;
         final double MAX = 9999999;
         while(!foundCheapest){
@@ -164,7 +167,7 @@ public class Manager{
                 int hasPartCount = 0;
                 String[] focusItem = potentialItems[index];
                 for(int j = START_PADDING; j < focusItem.length - END_PADDING; j++){
-                    if(focusItem[j].equals(FLAG_NOT_HAS)){
+                    if(focusItem[j].equals(FLAG_NOT_HAS) || hasPart[j-START_PADDING]){
                         continue;
                     }
 
@@ -176,6 +179,9 @@ public class Manager{
                 if(costPerPart > lowestCost){
                     continue;
                 }
+
+                // DEBUG
+                System.out.println(costPerPart + " " + focusItem[ID_INDEX] + " " + focusItem[COST_INDEX] + " " + hasPartCount);
 
                 lowestCost = costPerPart;
                 lowestItem = focusItem;
@@ -200,6 +206,10 @@ public class Manager{
             }
         }
 
+        // DEBUG
+        for(String id: lowestIDs){
+            System.out.println(id);
+        }
         return lowestIDs;
     }
 
@@ -314,7 +324,7 @@ public class Manager{
      *
      * @return The combined cost of each specified part.
      */
-    private double getPrice(String[] ids, String itemCategory){
+    private double getPrice(String[] ids, String itemCategory) throws SQLException, Exception{
         String[] fields = databaseAccess.getFields(itemCategory);
 
         // Ensure that the price field is handled
@@ -349,7 +359,7 @@ public class Manager{
      *         -2.00 if the item exists but cannot be made,
      *         the price otherwise.
      */
-    public double parseOrder(String itemType, String itemCategory, int quantity){
+    public double parseOrder(String itemType, String itemCategory, int quantity) throws SQLException, Exception{
         // Check if the inputs are valid.
         if(itemType == null || itemCategory == null || quantity == 0){
             System.out.println("Invalid request.");
@@ -382,7 +392,7 @@ public class Manager{
      *
      * @param itemCategory The category of the item
      */
-    private void purchaseItems(String itemCategory){
+    private void purchaseItems(String itemCategory) throws SQLException, Exception{
         for(String id : orderedParts){
             databaseAccess.removeFurniture(itemCategory, id);
         }
@@ -395,7 +405,7 @@ public class Manager{
      * This will also reset the manager once the file is written.
      */
 
-    public void confirmOrder(String origReq){
+    public void confirmOrder(String origReq) throws SQLException, Exception{
         String[] requestParts = origReq.split(" ");
         // String itemType = requestParts[0];
         String itemCategory = requestParts[1];
