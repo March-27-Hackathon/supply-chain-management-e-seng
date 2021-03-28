@@ -53,7 +53,7 @@ package edu.ucalgary.ensf409;
 			 System.out.println("Invalid quantity");
 			 continue;
 		 }catch(Exception e){
-			 System.out.println("Invalid furniture type that");
+			 System.out.println("Invalid furniture type");
 			 continue;
 		 }
 		 code+=items[0].charAt(0);
@@ -61,7 +61,7 @@ package edu.ucalgary.ensf409;
 		 code+=quantity;
 		 hold=manage.parseOrder(items[0].toLowerCase(),items[1].toLowerCase(),quan);
 		 if(hold==-1){
-			 System.out.println("Invalid furniture type this");
+			 System.out.println("Invalid furniture type");
 		 }else if(hold==-2){
 			 System.out.println("Order cannot be fulfilled based on current inventory");
 			 String[] manufaclist= this.manage.getManufacturersList(items[0].toLowerCase(),items[1].toLowerCase());
