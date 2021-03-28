@@ -44,6 +44,7 @@ public class Manager{
 
 
     /**
+	 * @param origReq the original request made by the user
      * Save the order with the cheapest necessary items within the database to
      * a .text file.
      * This will invoke a method within FileIO to save the files.
@@ -51,15 +52,24 @@ public class Manager{
      * TODO: ensure data is sent in the correct order and format.
      *
      */
-    private void saveOrder(){
+    private void saveOrder(String origReq){
         if(fileName == null){
             System.out.println("File name not specified.");
             System.exit(1);
         }
         FileIO orderWriter = new FileIO(fileName);
+		orderWriter.write(this.orderedParts.toArray(),origReq, this.getPrice(this.orderedParts));
     }
-
-
+  
+    /**
+	 * @param fileName String parameter to set fileName
+	 * setter function for fileName
+	 */
+    public void setFileName(String fileName){
+	    this.fileName = fileName;
+    }
+    
+  
     /**
      * Finds the cheapest desired item and return all relevent IDs.
      *
@@ -245,6 +255,7 @@ public class Manager{
         }
 
         return totalCost;
+
     }
 
 
@@ -298,8 +309,9 @@ public class Manager{
      * This will remove all bought instances within the database.
      * This will also reset the manager once the file is written.
      */
-    public void confirmOrder(){
-        saveOrder();
+
+    public void confirmOrder(String origReq){
+        saveOrder(origReq);
         purchaseItems();
         reset();
     }
