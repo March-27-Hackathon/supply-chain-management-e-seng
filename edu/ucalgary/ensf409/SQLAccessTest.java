@@ -24,16 +24,12 @@ public class SQLAccessTest {
     public final String USERNAME = "ensf409";
     public final String PASSWORD = "ensf409";
     public final String DBURL = "jdbc:mysql://localhost/INVENTORY";
-    @Rule
-    // Handle System.exit() status
-    public final ExpectedSystemExit exit = ExpectedSystemExit.none();
 
-    @Test
+    @Test (expected = Exception.class)
     /**
      * Tests the constructor and a failed connection.
      */
-    public void constructorAndInitializationFailed () {
-        exit.expectSystemExitWithStatus(1);
+    public void constructorAndInitializationFailed () throws SQLException, Exception {
         SQLAccess access = new SQLAccess(USERNAME, PASSWORD, "jdbc:mysql://localho/INVENTORY");
 
         access.close();
@@ -43,7 +39,7 @@ public class SQLAccessTest {
     /**
      * Tests properly removing furniture that exists
      */
-    public void removeFurnitureExists () {
+    public void removeFurnitureExists () throws SQLException, Exception {
         SQLAccess access = new SQLAccess(USERNAME, PASSWORD, DBURL);
 
         boolean success = access.removeFurniture("LAMP", "L053");
@@ -55,7 +51,7 @@ public class SQLAccessTest {
     /**
      * Tests removing furniture that does not exist
      */
-    public void removeFurnitureNotExists () {
+    public void removeFurnitureNotExists () throws SQLException, Exception {
         SQLAccess access = new SQLAccess(USERNAME, PASSWORD, DBURL);
 
         boolean success = access.removeFurniture("LAMP", "L676767676");
@@ -69,7 +65,7 @@ public class SQLAccessTest {
     /**
      * Tests getting fields from LAMP
      */
-    public void retrieveLAMPFields () {
+    public void retrieveLAMPFields () throws SQLException, Exception {
         SQLAccess access = new SQLAccess(USERNAME, PASSWORD, DBURL);
 
         String [] fields = access.getFields("LAMP");
@@ -84,7 +80,7 @@ public class SQLAccessTest {
     /**
      * Tests getting fields from CHAIR
      */
-    public void retrieveCHAIRFields () {
+    public void retrieveCHAIRFields () throws SQLException, Exception {
         SQLAccess access = new SQLAccess(USERNAME, PASSWORD, DBURL);
 
         String [] fields = access.getFields("CHAIR");
@@ -99,7 +95,7 @@ public class SQLAccessTest {
     /**
      * Tests getting fields from FILING
      */
-    public void retrieveFILINGFields () {
+    public void retrieveFILINGFields () throws SQLException, Exception {
         SQLAccess access = new SQLAccess(USERNAME, PASSWORD, DBURL);
 
         String [] fields = access.getFields("FILING");
@@ -114,7 +110,7 @@ public class SQLAccessTest {
     /**
      * Tests getting fields from DESK
      */
-    public void retrieveDESKFields () {
+    public void retrieveDESKFields () throws SQLException, Exception {
         SQLAccess access = new SQLAccess(USERNAME, PASSWORD, DBURL);
 
         String [] fields = access.getFields("DESK");
@@ -129,7 +125,7 @@ public class SQLAccessTest {
     /**
      * Tests getting fields from MANUFACTURER
      */
-    public void retrieveMANUFACTURERFields () {
+    public void retrieveMANUFACTURERFields () throws SQLException, Exception {
         SQLAccess access = new SQLAccess(USERNAME, PASSWORD, DBURL);
 
         String [] fields = access.getFields("MANUFACTURER");
@@ -144,7 +140,7 @@ public class SQLAccessTest {
     /**
      * Search for existing unique value by ID
      */
-    public void searchForExistingUniqueID () {
+    public void searchForExistingUniqueID () throws SQLException, Exception {
         SQLAccess access = new SQLAccess(USERNAME, PASSWORD, DBURL);
 
         String [][] results = access.searchFor("MANUFACTURER", "ManuID", "001");
@@ -160,7 +156,7 @@ public class SQLAccessTest {
     /**
      * Search for existing non-unique value
      */
-    public void searchForExistingNonUniqueID () {
+    public void searchForExistingNonUniqueID () throws SQLException, Exception {
         SQLAccess access = new SQLAccess(USERNAME, PASSWORD, DBURL);
 
         String [][] results = access.searchFor("FILING", "Price", "50");
@@ -179,7 +175,7 @@ public class SQLAccessTest {
     /**
      * Search for non-existing unique value
      */
-    public void searchForNonExistingUniqueID () {
+    public void searchForNonExistingUniqueID () throws SQLException, Exception {
         SQLAccess access = new SQLAccess(USERNAME, PASSWORD, DBURL);
 
         String [][] results = access.searchFor("LAMP", "ManuID", "007");
@@ -195,7 +191,7 @@ public class SQLAccessTest {
     /**
      * Test where the field searched for does not exist and should return null 
      */
-    public void searchWithInvalidField () {
+    public void searchWithInvalidField () throws SQLException, Exception {
         SQLAccess access = new SQLAccess(USERNAME, PASSWORD, DBURL);
 
         String [][] results = access.searchFor("LAMP", "Condition", "007");
@@ -209,7 +205,7 @@ public class SQLAccessTest {
     /**
      * Search for existing non-unique value
      */
-    public void searchForNonExistingNonUniqueID () {
+    public void searchForNonExistingNonUniqueID () throws SQLException, Exception {
         SQLAccess access = new SQLAccess(USERNAME, PASSWORD, DBURL);
 
         String [][] results = access.searchFor("CHAIR", "Price", "103");
@@ -225,7 +221,7 @@ public class SQLAccessTest {
     /**
      * Filter for existing values
      */
-    public void filterForExistingResult () {
+    public void filterForExistingResult () throws SQLException, Exception {
         SQLAccess access = new SQLAccess(USERNAME, PASSWORD, DBURL);
 
         String [][] filtered = access.filter("LAMP", "Study", "Bulb", "Y");
@@ -245,7 +241,7 @@ public class SQLAccessTest {
     /**
      * Filter for non-existing param
      */
-    public void filterForNonExistingResult () {
+    public void filterForNonExistingResult () throws SQLException, Exception {
         SQLAccess access = new SQLAccess(USERNAME, PASSWORD, DBURL);
 
         String [][] filtered = access.filter("LAMP", "Study", "Bulb", "Yes");
@@ -261,7 +257,7 @@ public class SQLAccessTest {
     /**
      * Filter for non-existing type
      */
-    public void filterForNonExistingType () {
+    public void filterForNonExistingType () throws SQLException, Exception {
         SQLAccess access = new SQLAccess(USERNAME, PASSWORD, DBURL);
 
         String [][] filtered = access.filter("LAMP", "Red", "Bulb", "Y");
@@ -277,7 +273,7 @@ public class SQLAccessTest {
     /**
      * Filter for existing unique value
      */
-    public void filterForExistingUniqueResult () {
+    public void filterForExistingUniqueResult () throws SQLException, Exception {
         SQLAccess access = new SQLAccess(USERNAME, PASSWORD, DBURL);
 
         String [][] filtered = access.filter("LAMP", "Study", "Bulb", "N");
@@ -293,7 +289,7 @@ public class SQLAccessTest {
     /**
      * Finding valid manufacturer IDS
      */
-    public void findManufacturerIDs () {
+    public void findManufacturerIDs () throws SQLException, Exception {
         SQLAccess access = new SQLAccess(USERNAME, PASSWORD, DBURL);
 
         String [] ids = access.getManuIDs("CHAIR", "Mesh");
@@ -308,7 +304,7 @@ public class SQLAccessTest {
     /**
      * Finding invalid ids from MANUFACTURER
      */
-    public void gettingInvalidIDs () {
+    public void gettingInvalidIDs () throws SQLException, Exception {
         SQLAccess access = new SQLAccess(USERNAME, PASSWORD, DBURL);
 
         String [] ids = access.getManuIDs("CHAIR", "TrialPack");
