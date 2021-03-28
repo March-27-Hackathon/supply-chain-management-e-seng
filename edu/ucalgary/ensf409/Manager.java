@@ -90,6 +90,22 @@ public class Manager{
     }
 
 
+    private String[] arrAppend(String[] original, String item){
+        String[] returnedArray = new String[original.length+1];
+        for(int index = 0; index < original; index++){
+            returnedArray[index] = original[index];
+        }
+
+        returnedArray[original.length] = item;
+        return returnedArray;
+    }
+
+
+    private String[] arrRemove(String[] original, int ignoreIndex){
+        return arrRemove(original, original[ignoreIndex]);
+    }
+
+
     private String[] arrRemove(String[] original, String item){
         String[] returnedArray = new String[original.length-1];
 
