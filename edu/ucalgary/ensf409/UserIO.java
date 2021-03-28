@@ -4,6 +4,7 @@
  * @version 1.1
  * @since 1.0
  */
+ package edu.ucalgary.ensf409;
  /**
  Dedicated class for User interfacing, currently uses the terminal, this may change
  */
