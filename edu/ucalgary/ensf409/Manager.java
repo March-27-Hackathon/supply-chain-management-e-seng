@@ -86,6 +86,24 @@ public class Manager{
      * @return A String array containing all ordered parts for the request.
      */
     private String[] findCheapestItems(String itemType, String itemCategory){
+
+    }
+
+
+    private String[] arrRemove(String[] original, String item){
+        String[] returnedArray = new String[original.length-1];
+
+        int index = 0;
+        for(String origStr : original){
+            if(origStr.equals(item)){
+                continue;
+            }
+
+            returnedArray[index] = origStr;
+            index++;
+        }
+
+        return returnedArray;
     }
 
 
