@@ -8,6 +8,6 @@ package edu.ucalgary.ensf409;
 
 public class Runner{
     public static void main(String[] args){
-        
+        UserIO interact= new UserIO();
     }
 }
