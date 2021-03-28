@@ -389,7 +389,7 @@ public class Manager{
             // :/
             String[] itemRow = databaseAccess.searchFor(itemCategory, "ID", id)[0];
             String priceStr = itemRow[priceIndex];
-            priceIndex += Double.parseDouble(priceStr);
+            totalCost += Double.parseDouble(priceStr);
         }
 
         return totalCost;
