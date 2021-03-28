@@ -108,7 +108,8 @@ public class Manager{
      * @return A String array containing all ordered parts for the request.
      */
     private String[] findCheapestItems(String itemType, String itemCategory){
-        String[] partNames = isolateParts(databaseAccess.getFields(itemCategory));
+        String[] fieldNames = databaseAccess.getFields(itemCategory);
+        String[] partNames = isolateParts(fieldNames);
         
         // Store, in an array which parts have been satisfied. (initialized false)
         boolean hasPart[] = new boolean[partNames.length];
@@ -124,7 +125,7 @@ public class Manager{
         final int START_PADDING = 2;
         final int END_PADDING = 2;
 
-        final int COST_INDEX = partNames.length + 3;
+        final int COST_INDEX = fieldNames.length - 2;
         final int ID_INDEX = 0;
         final double MAX = 9999999;
         while(!foundCheapest){
@@ -155,7 +156,7 @@ public class Manager{
                 int hasPartCount = 0;
                 String[] focusItem = potentialItems[index];
                 for(int j = START_PADDING; j < focusItem.length - END_PADDING; j++){
-                    if(focusItem[j].equals(FLAG_NOT_HAS)){
+                    if(focusItem[j].equals(FLAG_NOT_HAS) || hasPart[j-START_PADDING]){
                         continue;
                     }
 
@@ -167,6 +168,9 @@ public class Manager{
                 if(costPerPart > lowestCost){
                     continue;
                 }
+
+                // DEBUG
+                System.out.println(costPerPart + " " + focusItem[ID_INDEX] + " " + focusItem[COST_INDEX] + " " + hasPartCount);
 
                 lowestCost = costPerPart;
                 lowestItem = focusItem;
@@ -191,6 +195,10 @@ public class Manager{
             }
         }
 
+        // DEBUG
+        for(String id: lowestIDs){
+            System.out.println(id);
+        }
         return lowestIDs;
     }
 
