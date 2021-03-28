@@ -5,3 +5,9 @@
  * @since 1.0
  */
 package edu.ucalgary.ensf409;
+
+public class Runner{
+    public static void main(String[] args){
+        
+    }
+}
