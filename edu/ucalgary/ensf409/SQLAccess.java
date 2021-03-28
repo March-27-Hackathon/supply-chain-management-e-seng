@@ -27,7 +27,7 @@ public class SQLAccess {
      * main used only for debugging purposes
      * @param args command line args.
      */
-    public static void main (String [] args) {
+    public static void main (String [] args) throws SQLException, Exception {
         SQLAccess access = new SQLAccess("ensf409", "ensf409", "jdbc:mysql://localhost/INVENTORY");
 
         boolean success = access.removeFurniture("LAMP", "L013"); // WORK FINE
@@ -69,7 +69,7 @@ public class SQLAccess {
      * @param password password to access the database
      * @param dburl url to access the database
      */
-    public SQLAccess (String username, String password, String dburl) {
+    public SQLAccess (String username, String password, String dburl) throws SQLException, Exception {
         this.USERNAME = username;
         this.PASSWORD = password;
         this.DBURL = dburl;
@@ -79,25 +79,21 @@ public class SQLAccess {
     /**
      * Initializes connection with instance username, password, and dburl
      */
-    private void initializeConnection () {
+    private void initializeConnection () throws SQLException, Exception {
         try{
             this.dbConnection = DriverManager.getConnection(this.DBURL, this.USERNAME, this.PASSWORD);
             this.statement = dbConnection.createStatement();
         } catch (SQLException e) {
-            System.out.println("SQL connection failed.");
-            e.printStackTrace();
-            System.exit(1);
+            throw new SQLException ();
         } catch (Exception ex) {
-            System.out.println("Unknown error in initialization.");
-            ex.printStackTrace();
-            System.exit(1);
+            throw new Exception ();
         }
     }
 
     /**
      * Closes connection to the database and the ResultSet used throughout the class
      */
-    public void close () {
+    public void close () throws SQLException, Exception {
         try {
             this.dbConnection.close();
             if (this.results != null) {
@@ -105,13 +101,9 @@ public class SQLAccess {
             }
             this.statement.close();
         } catch (SQLException e) {
-            System.out.println("Error while closing database connection and result set");
-            e.printStackTrace();
-            System.exit(1);
+            throw new SQLException ();
         } catch (Exception ex) {
-            System.out.println("Unknown error while closing database connection and result set");
-            ex.printStackTrace();
-            System.exit(1);
+            throw new Exception ();
         }
     }
 
@@ -121,7 +113,7 @@ public class SQLAccess {
      * @param id a string id for the item which was used
      * @return boolean value of success or failure
      */
-    public boolean removeFurniture (String table, String id) {
+    public boolean removeFurniture (String table, String id) throws SQLException, Exception {
         try {
             String query = "DELETE FROM " + table + " WHERE id = \'" + id + "\'";    // set up query
             PreparedStatement delStmnt = dbConnection.prepareStatement(query);
@@ -140,15 +132,9 @@ public class SQLAccess {
                 return true;
             }
         } catch (SQLException e) {
-            System.out.println("Error deleting furniture item " + id
-                + " from " + table);
-            e.printStackTrace();
-            System.exit(1);
+            throw new SQLException ();
         } catch (Exception ex) {
-            System.out.println("Unknown error deleting furniture item " + id
-                + " from " + table);
-            ex.printStackTrace();
-            System.exit(1);
+            throw new Exception ();
         }
         return false;
     }
@@ -159,7 +145,7 @@ public class SQLAccess {
      * @param table the table required to get all of this information from
      * @return String array of the fields in order
      */
-    public String [] getFields(String table) {
+    public String [] getFields(String table) throws SQLException, Exception {
         try {
             // Retrieve all results from the table (not necessary to pull all but simple)
             this.results = getTableInformation(table);
@@ -176,14 +162,11 @@ public class SQLAccess {
 
             return fields;
         } catch (SQLException e) {
-            e.printStackTrace();
-            System.exit(1);
+            throw new SQLException ();
         } catch (Exception ex) {
-            ex.printStackTrace();
-            System.exit(1);
+            throw new Exception ();
         }
 
-        return null;
     }
 
     /**
@@ -191,7 +174,7 @@ public class SQLAccess {
      * @param table the table from which to retrive all the data from
      * @return ResultSet of all results in the table returns null if unsuccessful
      */
-    public ResultSet getTableInformation (String table) {
+    public ResultSet getTableInformation (String table) throws SQLException, Exception {
         try {
 
             String query = "SELECT * FROM " + table; // set query with proper table
@@ -204,16 +187,10 @@ public class SQLAccess {
 
             return this.results; // return the result set (also functions as a getter method)
         } catch (SQLException e) {
-            System.out.println("Error in accessing the table and it's information");
-            e.printStackTrace();
-            System.exit(1);
+            throw new SQLException ();
         } catch (Exception ex) {
-            System.out.println("Unknonw error in accessing the table and it's information");
-            ex.printStackTrace();
-            System.exit(1);
+            throw new Exception ();
         }
-
-        return null;
     }
 
     /**
@@ -229,7 +206,7 @@ public class SQLAccess {
      * null will be returned if the key does not exist or the field does not 
      * exist in the table.
      */
-    public String [][] searchFor (String table, String field, String key) {
+    public String [][] searchFor (String table, String field, String key) throws SQLException, Exception {
         /* Handling the errors for if the field does not exist */
         String [] fields = this.getFields(table);   // retrieve the fields
         String tmp = "";
@@ -265,16 +242,10 @@ public class SQLAccess {
             return arr.toArray(new String[arr.size()][fields.length]);
 
         } catch (SQLException e) {
-            System.out.println("Error in retrieving " + key + " from " + field + " in " + table);
-            e.printStackTrace();
-            System.exit(1);
+            throw new SQLException ();
         } catch (Exception ex) {
-            System.out.println("Unknown error in retrieving " + key + " from " + field + " in " + table);
-            ex.printStackTrace();
-            System.exit(1);
+            throw new Exception ();
         }
-
-        return null;
     }
 
     /**
@@ -288,7 +259,7 @@ public class SQLAccess {
      * criteria based on the parameters. null will be returned if there are no
      * results.
      */
-    public String [][] filter (String table, String type, String param, String key) {
+    public String [][] filter (String table, String type, String param, String key) throws SQLException, Exception {
         try {
             // Search
             String [] fields = this.getFields(table);
@@ -312,18 +283,10 @@ public class SQLAccess {
             return arr.toArray(new String[arr.size()][fields.length]);
 
         } catch (SQLException e) {
-            System.out.println("Error in retrieving values from " + table + 
-                " filtered by type " + type + " and " + key + " under " + param);
-            e.printStackTrace();
-            System.exit(1);
+            throw new SQLException ();
         } catch (Exception ex) {
-            System.out.println("Unknown Error in retrieving values from " + table + 
-                " filtered by type " + type + " and " + key + " under " + param);
-            ex.printStackTrace();
-            System.exit(1);
+            throw new Exception ();
         }
-
-        return null;
     }
 
     /**
@@ -333,7 +296,7 @@ public class SQLAccess {
      * @return String array of the values that fit the criteria but only of the
      * manufacturer id's
      */
-    public String [] getManuIDs (String table, String type) {
+    public String [] getManuIDs (String table, String type) throws SQLException, Exception {
         String [][] tableResults = this.searchFor(table, "Type", type);
         String [] fields = this.getFields(table);
 

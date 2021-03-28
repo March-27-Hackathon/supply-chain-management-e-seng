@@ -21,17 +21,16 @@ import java.sql.*;
  * the initialization and the closing method.
  */
 public class SQLAccessTest {
-    @Rule
-    // Handle System.exit() status
-    public final ExpectedSystemExit exit = ExpectedSystemExit.none();
+    public final String USERNAME = "ensf409";
+    public final String PASSWORD = "ensf409";
+    public final String DBURL = "jdbc:mysql://localhost/INVENTORY";
 
-    @Test
+    @Test (expected = Exception.class)
     /**
      * Tests the constructor and a failed connection.
      */
-    public void constructorAndInitializationFailed () {
-        exit.expectSystemExitWithStatus(1);
-        SQLAccess access = new SQLAccess("ensf409", "ensf409", "jdbc:mysql://localho/INVENTORY");
+    public void constructorAndInitializationFailed () throws SQLException, Exception {
+        SQLAccess access = new SQLAccess(USERNAME, PASSWORD, "jdbc:mysql://localho/INVENTORY");
 
         access.close();
     }
@@ -40,8 +39,8 @@ public class SQLAccessTest {
     /**
      * Tests properly removing furniture that exists
      */
-    public void removeFurnitureExists () {
-        SQLAccess access = new SQLAccess("ensf409", "ensf409", "jdbc:mysql://localhost/INVENTORY");
+    public void removeFurnitureExists () throws SQLException, Exception {
+        SQLAccess access = new SQLAccess(USERNAME, PASSWORD, DBURL);
 
         boolean success = access.removeFurniture("LAMP", "L053");
         access.close();
@@ -52,8 +51,8 @@ public class SQLAccessTest {
     /**
      * Tests removing furniture that does not exist
      */
-    public void removeFurnitureNotExists () {
-        SQLAccess access = new SQLAccess("ensf409", "ensf409", "jdbc:mysql://localhost/INVENTORY");
+    public void removeFurnitureNotExists () throws SQLException, Exception {
+        SQLAccess access = new SQLAccess(USERNAME, PASSWORD, DBURL);
 
         boolean success = access.removeFurniture("LAMP", "L676767676");
         access.close();
@@ -66,8 +65,8 @@ public class SQLAccessTest {
     /**
      * Tests getting fields from LAMP
      */
-    public void retrieveLAMPFields () {
-        SQLAccess access = new SQLAccess("ensf409", "ensf409", "jdbc:mysql://localhost/INVENTORY");
+    public void retrieveLAMPFields () throws SQLException, Exception {
+        SQLAccess access = new SQLAccess(USERNAME, PASSWORD, DBURL);
 
         String [] fields = access.getFields("LAMP");
         String [] orig = {"ID", "Type", "Base", "Bulb", "Price", "ManuID"};
@@ -81,8 +80,8 @@ public class SQLAccessTest {
     /**
      * Tests getting fields from CHAIR
      */
-    public void retrieveCHAIRFields () {
-        SQLAccess access = new SQLAccess("ensf409", "ensf409", "jdbc:mysql://localhost/INVENTORY");
+    public void retrieveCHAIRFields () throws SQLException, Exception {
+        SQLAccess access = new SQLAccess(USERNAME, PASSWORD, DBURL);
 
         String [] fields = access.getFields("CHAIR");
         String [] orig = {"ID", "Type", "Legs", "Arms", "Seat", "Cushion", "Price", "ManuID"};
@@ -96,8 +95,8 @@ public class SQLAccessTest {
     /**
      * Tests getting fields from FILING
      */
-    public void retrieveFILINGFields () {
-        SQLAccess access = new SQLAccess("ensf409", "ensf409", "jdbc:mysql://localhost/INVENTORY");
+    public void retrieveFILINGFields () throws SQLException, Exception {
+        SQLAccess access = new SQLAccess(USERNAME, PASSWORD, DBURL);
 
         String [] fields = access.getFields("FILING");
         String [] orig = {"ID", "Type", "Rails", "Drawers", "Cabinet", "Price", "ManuID"};
@@ -111,8 +110,8 @@ public class SQLAccessTest {
     /**
      * Tests getting fields from DESK
      */
-    public void retrieveDESKFields () {
-        SQLAccess access = new SQLAccess("ensf409", "ensf409", "jdbc:mysql://localhost/INVENTORY");
+    public void retrieveDESKFields () throws SQLException, Exception {
+        SQLAccess access = new SQLAccess(USERNAME, PASSWORD, DBURL);
 
         String [] fields = access.getFields("DESK");
         String [] orig = {"ID", "Type", "Legs", "Top", "Drawer", "Price", "ManuID"};
@@ -126,8 +125,8 @@ public class SQLAccessTest {
     /**
      * Tests getting fields from MANUFACTURER
      */
-    public void retrieveMANUFACTURERFields () {
-        SQLAccess access = new SQLAccess("ensf409", "ensf409", "jdbc:mysql://localhost/INVENTORY");
+    public void retrieveMANUFACTURERFields () throws SQLException, Exception {
+        SQLAccess access = new SQLAccess(USERNAME, PASSWORD, DBURL);
 
         String [] fields = access.getFields("MANUFACTURER");
         String [] orig = {"ManuID", "Name", "Phone", "Province"};
@@ -141,8 +140,8 @@ public class SQLAccessTest {
     /**
      * Search for existing unique value by ID
      */
-    public void searchForExistingUniqueID () {
-        SQLAccess access = new SQLAccess("ensf409", "ensf409", "jdbc:mysql://localhost/INVENTORY");
+    public void searchForExistingUniqueID () throws SQLException, Exception {
+        SQLAccess access = new SQLAccess(USERNAME, PASSWORD, DBURL);
 
         String [][] results = access.searchFor("MANUFACTURER", "ManuID", "001");
 
@@ -157,8 +156,8 @@ public class SQLAccessTest {
     /**
      * Search for existing non-unique value
      */
-    public void searchForExistingNonUniqueID () {
-        SQLAccess access = new SQLAccess("ensf409", "ensf409", "jdbc:mysql://localhost/INVENTORY");
+    public void searchForExistingNonUniqueID () throws SQLException, Exception {
+        SQLAccess access = new SQLAccess(USERNAME, PASSWORD, DBURL);
 
         String [][] results = access.searchFor("FILING", "Price", "50");
 
@@ -176,8 +175,8 @@ public class SQLAccessTest {
     /**
      * Search for non-existing unique value
      */
-    public void searchForNonExistingUniqueID () {
-        SQLAccess access = new SQLAccess("ensf409", "ensf409", "jdbc:mysql://localhost/INVENTORY");
+    public void searchForNonExistingUniqueID () throws SQLException, Exception {
+        SQLAccess access = new SQLAccess(USERNAME, PASSWORD, DBURL);
 
         String [][] results = access.searchFor("LAMP", "ManuID", "007");
 
@@ -192,8 +191,8 @@ public class SQLAccessTest {
     /**
      * Test where the field searched for does not exist and should return null 
      */
-    public void searchWithInvalidField () {
-        SQLAccess access = new SQLAccess("ensf409", "ensf409", "jdbc:mysql://localhost/INVENTORY");
+    public void searchWithInvalidField () throws SQLException, Exception {
+        SQLAccess access = new SQLAccess(USERNAME, PASSWORD, DBURL);
 
         String [][] results = access.searchFor("LAMP", "Condition", "007");
 
@@ -206,8 +205,8 @@ public class SQLAccessTest {
     /**
      * Search for existing non-unique value
      */
-    public void searchForNonExistingNonUniqueID () {
-        SQLAccess access = new SQLAccess("ensf409", "ensf409", "jdbc:mysql://localhost/INVENTORY");
+    public void searchForNonExistingNonUniqueID () throws SQLException, Exception {
+        SQLAccess access = new SQLAccess(USERNAME, PASSWORD, DBURL);
 
         String [][] results = access.searchFor("CHAIR", "Price", "103");
 
@@ -222,8 +221,8 @@ public class SQLAccessTest {
     /**
      * Filter for existing values
      */
-    public void filterForExistingResult () {
-        SQLAccess access = new SQLAccess("ensf409", "ensf409", "jdbc:mysql://localhost/INVENTORY");
+    public void filterForExistingResult () throws SQLException, Exception {
+        SQLAccess access = new SQLAccess(USERNAME, PASSWORD, DBURL);
 
         String [][] filtered = access.filter("LAMP", "Study", "Bulb", "Y");
 
@@ -242,8 +241,8 @@ public class SQLAccessTest {
     /**
      * Filter for non-existing param
      */
-    public void filterForNonExistingResult () {
-        SQLAccess access = new SQLAccess("ensf409", "ensf409", "jdbc:mysql://localhost/INVENTORY");
+    public void filterForNonExistingResult () throws SQLException, Exception {
+        SQLAccess access = new SQLAccess(USERNAME, PASSWORD, DBURL);
 
         String [][] filtered = access.filter("LAMP", "Study", "Bulb", "Yes");
 
@@ -258,8 +257,8 @@ public class SQLAccessTest {
     /**
      * Filter for non-existing type
      */
-    public void filterForNonExistingType () {
-        SQLAccess access = new SQLAccess("ensf409", "ensf409", "jdbc:mysql://localhost/INVENTORY");
+    public void filterForNonExistingType () throws SQLException, Exception {
+        SQLAccess access = new SQLAccess(USERNAME, PASSWORD, DBURL);
 
         String [][] filtered = access.filter("LAMP", "Red", "Bulb", "Y");
 
@@ -274,8 +273,8 @@ public class SQLAccessTest {
     /**
      * Filter for existing unique value
      */
-    public void filterForExistingUniqueResult () {
-        SQLAccess access = new SQLAccess("ensf409", "ensf409", "jdbc:mysql://localhost/INVENTORY");
+    public void filterForExistingUniqueResult () throws SQLException, Exception {
+        SQLAccess access = new SQLAccess(USERNAME, PASSWORD, DBURL);
 
         String [][] filtered = access.filter("LAMP", "Study", "Bulb", "N");
 
@@ -290,8 +289,8 @@ public class SQLAccessTest {
     /**
      * Finding valid manufacturer IDS
      */
-    public void findManufacturerIDs () {
-        SQLAccess access = new SQLAccess("ensf409", "ensf409", "jdbc:mysql://localhost/INVENTORY");
+    public void findManufacturerIDs () throws SQLException, Exception {
+        SQLAccess access = new SQLAccess(USERNAME, PASSWORD, DBURL);
 
         String [] ids = access.getManuIDs("CHAIR", "Mesh");
         String [] orig = {"005", "003"};
@@ -305,8 +304,8 @@ public class SQLAccessTest {
     /**
      * Finding invalid ids from MANUFACTURER
      */
-    public void gettingInvalidIDs () {
-        SQLAccess access = new SQLAccess("ensf409", "ensf409", "jdbc:mysql://localhost/INVENTORY");
+    public void gettingInvalidIDs () throws SQLException, Exception {
+        SQLAccess access = new SQLAccess(USERNAME, PASSWORD, DBURL);
 
         String [] ids = access.getManuIDs("CHAIR", "TrialPack");
 

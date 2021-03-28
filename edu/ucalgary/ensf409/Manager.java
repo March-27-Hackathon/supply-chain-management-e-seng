@@ -20,6 +20,11 @@ public class Manager{
     private String dbUrl;
     private String fileName;
 
+    public static void main (String [] args) {
+        Manager manager = new Manager ("ensf409", "ensf409", "jdbc:mysql://localhost/INVENTORY");
+        String [] arr = manager.findCheapestItems("mesh", "chair");
+    }
+
     public Manager(String dbUsername, String dbPassword, String dbUrl){
         this.dbUsername = dbUsername;
         this.dbPassword = dbPassword;
@@ -99,7 +104,7 @@ public class Manager{
      * @param itemType The specific type of the item that is desired.
      *  - This word should be contained within the "type" field within each
      *    table.
-     * @param itemCategory The overall category that the item falls under.
+     * @param table The overall category that the item falls under.
      *  - This should be one of the tables in the Database.
      *
      *  eg. if the query is: <code>mesh chair, 2</code>,
