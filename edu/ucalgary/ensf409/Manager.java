@@ -250,11 +250,29 @@ public class Manager{
     }
 
 
+    /**
+     * Removes a specific object at a specific index.
+     * Also makes the array one element smaller.
+     *
+     * @param original The String array to remove items from.
+     * @param ignoreIndex The index of the item that needs to be removed.
+     *
+     * @return A smaller string array without the item at the given index.
+     */
     private String[] arrRemove(String[] original, int ignoreIndex){
         return arrRemove(original, original[ignoreIndex]);
     }
 
 
+    /**
+     * Removes a specific object within a String array.
+     * Also makes the array one element smaller.
+     *
+     * @param original The String array to remove items from.
+     * @param ignoreIndex The item that needs to be removed.
+     *
+     * @return A smaller string array without the specified item.
+     */
     private String[] arrRemove(String[] original, String item){
         String[] returnedArray = new String[original.length-1];
 
