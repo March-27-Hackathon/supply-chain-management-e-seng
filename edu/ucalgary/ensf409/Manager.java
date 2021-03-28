@@ -146,11 +146,11 @@ public class Manager{
      */
     private String[] minimizePrice(String[] chosenIDs, String[] idPool, boolean[] missingParts, String itemCategory){
         // no need for additional parts? return with the previous ids.
-        boolean stillMissing = false;
+        boolean incomplete = false;
         for(boolean partMissing : missingParts){
-            stillMissing = stillMissing && partMissing;
+            incomplete = incomplete && partMissing;
         }
-        if(!stillMissing){
+        if(!incomplete){
             return chosenIDs;
         }
         // still need things but nowhere to pull from? failed - return
@@ -160,7 +160,7 @@ public class Manager{
 
         // Determine which parts still need to be searched for.
         // hash map pls
-        boolean[] stillMissing = missingParts;
+        boolean stillMissing[] = missingParts;
         if(chosenIDs.length != 0){
             stillMissing = new boolean[missingParts.length];
             int id = chosenIDs[chosenIDs.length - 1];
