@@ -139,6 +139,9 @@ public class Manager{
                     return new String[0];
                 }
                 for(String[] row : rows){
+                    if(orderedParts.size() > 0 && orderedParts.contains(row[0])){
+                        continue;
+                    }
                     potentialItems = arrAppend(potentialItems, row);
                 }
             }
@@ -167,6 +170,10 @@ public class Manager{
 
                 lowestCost = costPerPart;
                 lowestItem = focusItem;
+            }
+
+            if(lowestItem == null){
+                return new String[0];
             }
 
             // Check which parts still need to be found;
