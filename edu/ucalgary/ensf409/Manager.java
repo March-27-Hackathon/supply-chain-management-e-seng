@@ -208,10 +208,10 @@ public class Manager{
         // ie. remove first two things and last two things
         
         // garbage
-        String[] returnArr = remove(row, 0);
-        returnArr = remove(returnArr, 0);
-        returnArr = remove(returnArr, returnArr.length-1);
-        returnArr = remove(returnArr, returnArr.legnth-1);
+        String[] returnArr = arrRemove(row, 0);
+        returnArr = arrRemove(returnArr, 0);
+        returnArr = arrRemove(returnArr, returnArr.length-1);
+        returnArr = arrRemove(returnArr, returnArr.length-1);
 
         return returnArr;
     }
