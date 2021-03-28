@@ -97,7 +97,7 @@ public class SQLAccess {
     /**
      * Closes connection to the database and the ResultSet used throughout the class
      */
-    private void close () {
+    public void close () {
         try {
             this.dbConnection.close();
             if (this.results != null) {
@@ -125,8 +125,6 @@ public class SQLAccess {
         try {
             String query = "DELETE FROM " + table + " WHERE id = \'" + id + "\'";    // set up query
             PreparedStatement delStmnt = dbConnection.prepareStatement(query);
-
-            // delStmnt.setString(1, id);      // insert id to be removed
 
             int rows = delStmnt.executeUpdate();    // update the table
 

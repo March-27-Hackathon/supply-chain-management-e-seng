@@ -16,7 +16,7 @@ package edu.ucalgary.ensf409;
 	
 	/**
 	Default Constructor, propmts the user for the data base credentials first and foremost
-	if those are invalid, the program ends else it begins asking the user for their desired
+	if those are invalid, the program ends, else it begins asking the user for their desired
 	furniture order, if the user inputs invalid furniture types or negative quantites the program
 	will ask the user again for that data until it is able to proceed with it
 	calls both initalizeManage() and confirm()
@@ -26,11 +26,12 @@ package edu.ucalgary.ensf409;
 		 int quan=0;
 		 double hold=-1;
 		 String code="";
+		 String quantity;
 		 while(hold==-1){
 		 System.out.println("Please enter your desired furniture type:");
 		 this.request = System.console().readLine();
 		 System.out.println("Please enter quantity:");
-		String quantity=System.console().readLine();
+		quantity=System.console().readLine();
 		 this.request=this.request.trim();
 		String [] items=this.request.split(" ");
 		 quantity=quantity.trim();
@@ -41,7 +42,7 @@ package edu.ucalgary.ensf409;
 		 }
 		 try{
 		 quan = Integer.parseInt(quantity);
-		 if(quan<0){
+		 if(quan<=0){
 			 throw new IllegalArgumentException();
 		 }
 		 if(items.length<2){
@@ -55,14 +56,25 @@ package edu.ucalgary.ensf409;
 			 continue;
 		 }
 		 code+=quantity;
-		 hold=manage.parseOrder(items[0],items[1],quan);
+		 hold=manage.parseOrder(items[0].toLowerCase(),items[1].toLowerCase(),quan);
 		 if(hold==-1){
 			 System.out.println("Invalid furniture type");
 		 }else if(hold==-2){
 			 System.out.println("Order cannot be fulfilled based on current inventory");
+			 String[] manufaclist= this.manage.getManufacturersList(items[0].toLowerCase(),items[1].toLowerCase());
+			 String temp="";
+			 for(int i=0; i<manufaclist.length-1; i++){
+				 temp+=manufaclist[i];
+				 temp+=", ";
+			 }
+			 temp+="and ";
+			 temp+=manufaclist[manufaclist.length-1];
+			 System.out.println("Suggested manufacturers are "+temp);
 			 System.exit(1);
 		 }
 		 }
+		 this.request+=" ";
+		 this.request+=quantity;
 		 this.manage.setFileName(code);
 		 this.confirm(hold);
 	 }
@@ -75,7 +87,7 @@ package edu.ucalgary.ensf409;
 		 String user=System.console().readLine();
 		 System.out.println("Please Enter password");
 		 String pass=System.console().readLine();
-		 System.out.println("Please Enter DataBase URL");
+		 System.out.println("Please Enter DataBase URL in the form (jdbc:mysql://localhost/INVENTORY)");
 		 String dburl=System.console().readLine();
 		 this.manage= new Manager(user,pass,dburl);
 	 }
@@ -93,7 +105,7 @@ package edu.ucalgary.ensf409;
 		 String response=System.console().readLine();
 		 response=response.trim();
 		 if(response.equalsIgnoreCase("y")){
-			 this.manage.confirmOrder();
+			 this.manage.confirmOrder(this.request);
 			 System.out.println("Order confirmed successfully, Please see order form");
 			 break;
 		 }else if(response.equalsIgnoreCase("n")){
