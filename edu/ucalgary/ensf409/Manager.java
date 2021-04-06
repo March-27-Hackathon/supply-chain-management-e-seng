@@ -25,6 +25,7 @@ import java.sql.SQLException;
 public class Manager{
     private SQLAccess databaseAccess;
     private ArrayList<String> orderedParts;
+    private int extraParts[];
     private int totalPrice;
 
     private String dbUsername;
