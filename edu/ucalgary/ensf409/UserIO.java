@@ -30,10 +30,10 @@ import java.sql.*;
 		 while(true){
 		 System.out.println("Please enter your desired furniture type (e.g. 'desk lamp') or type 'Q' to quit:");
 		 this.request = System.console().readLine();
+		  this.request=this.request.trim();
 		 if(this.request.equalsIgnoreCase("Q")){
 			 System.exit(1);
 		 }
-		 this.request=this.request.trim();
 		String [] items=this.request.split(" ");
 		try{
 			if(items.length>2){
