@@ -22,6 +22,10 @@ public class SQLAccess {
     private Connection dbConnection;
     private ResultSet results;
     private Statement statement;
+    private String [] lampManufacturer;
+    private String [] filingManufacturer;
+    private String [] deskManufacturer;
+    private String [] chairManufacturer;
 
     /**
      * main used only for debugging purposes
@@ -59,6 +63,33 @@ public class SQLAccess {
             System.out.println();
         }
 
+        System.out.println("\nManufacturer Results:");
+        String [] results = access.getChairManufacturer();
+        for (int i = 0; i < results.length; i++) {
+            System.out.print(results[i] + "\t");
+        }
+
+        System.out.println();
+       
+        results = access.getDeskManufacturer();
+        for (int i = 0; i < results.length; i++) {
+            System.out.print(results[i] + "\t");
+        }
+
+        System.out.println();
+       
+        results = access.getFilingManufacturer();
+        for (int i = 0; i < results.length; i++) {
+            System.out.print(results[i] + "\t");
+        }
+
+        System.out.println();
+       
+        results = access.getLampManufacturer();
+        for (int i = 0; i < results.length; i++) {
+            System.out.print(results[i] + "\t");
+        }
+
         access.close();
     }
 
@@ -74,6 +105,47 @@ public class SQLAccess {
         this.PASSWORD = password;
         this.DBURL = dburl;
         this.initializeConnection();
+        this.manufacturers();
+    }
+
+    /**
+     * Initializes manufacturer arrays
+     */
+    private void manufacturers () throws SQLException, Exception {
+        String [] tables = {"LAMP", "FILING", "CHAIR", "DESK"};
+        for (int i = 0; i < tables.length; i++) {
+            String [] fields = getFields(tables[i]);
+
+            String query = "SELECT * FROM " + tables[i];
+            Statement searchStmt = dbConnection.createStatement();
+            this.results = searchStmt.executeQuery(query);
+
+            ArrayList<String> arr = new ArrayList<String>();
+
+            while (this.results.next()) {
+                String temp = this.results.getString(fields.length);
+                arr.add(temp);
+            }
+
+            String [] manuIDs = arr.toArray(new String [arr.size()]);
+            ArrayList <String> filteredIDs = new ArrayList<String>();
+            for (int k = 0; k < manuIDs.length; k++) {
+            // if the ID is not already in the list then add it
+                if (!filteredIDs.contains(manuIDs[k])) {    
+                    filteredIDs.add(manuIDs[k]);
+                }
+            }
+
+            if (tables[i].equals("LAMP")) {
+                this.lampManufacturer = filteredIDs.toArray(new String [filteredIDs.size()]);
+            } else if (tables[i].equals("FILING")) {
+                this.filingManufacturer = filteredIDs.toArray(new String [filteredIDs.size()]);
+            } else if (tables[i].equals("CHAIR")) {
+                this.chairManufacturer = filteredIDs.toArray(new String [filteredIDs.size()]);
+            } else if (tables[i].equals("DESK")) {
+                this.deskManufacturer = filteredIDs.toArray(new String [filteredIDs.size()]);
+            }
+        }
     }
 
     /**
@@ -105,6 +177,34 @@ public class SQLAccess {
         } catch (Exception ex) {
             throw new Exception ();
         }
+    }
+
+    /**
+     * Getter function for Lamp manufacturers
+     */
+    public String [] getLampManufacturer () {
+        return this.lampManufacturer;
+    }
+
+    /**
+     * Getter function for Filing manufacturers
+     */
+    public String [] getFilingManufacturer () {
+        return this.filingManufacturer;
+    }
+
+    /**
+     * Getter function for Desk manufacturers
+     */
+    public String [] getDeskManufacturer () {
+        return this.deskManufacturer;
+    }
+
+    /**
+     * Getter function for Chair manufacturers
+     */
+    public String [] getChairManufacturer () {
+        return this.chairManufacturer;
     }
 
     /**
@@ -174,16 +274,12 @@ public class SQLAccess {
      * @param table the table from which to retrive all the data from
      * @return ResultSet of all results in the table returns null if unsuccessful
      */
-    public ResultSet getTableInformation (String table) throws SQLException, Exception {
+    private ResultSet getTableInformation (String table) throws SQLException, Exception {
         try {
 
             String query = "SELECT * FROM " + table; // set query with proper table
 
             this.results = statement.executeQuery(query); // update the ResultSet
-
-            // get the number of columns
-            ResultSetMetaData meta = this.results.getMetaData();
-            int columns = meta.getColumnCount();
 
             return this.results; // return the result set (also functions as a getter method)
         } catch (SQLException e) {
