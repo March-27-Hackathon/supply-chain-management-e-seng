@@ -101,4 +101,22 @@ public class FileIOTest {
 		FileIO test = new FileIO("EN22");
 		assertTrue("Constructor failed", test!=null);
 	}
+	@After
+	public void Afterwards(){
+		File first= new File("order.txt");
+		File second = new File("orderL093(1).txt");
+		File third = new File("orderL093.txt");
+		if(first.exists()){
+			first.delete();
+		}
+		if(second.exists()){
+			second.delete();
+		}
+		if(third.exists()){
+			third.delete();
+		}
+	}
+	
+	
+	
 }
