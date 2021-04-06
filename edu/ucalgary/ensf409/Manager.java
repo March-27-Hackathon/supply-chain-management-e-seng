@@ -25,6 +25,7 @@ import java.sql.SQLException;
 public class Manager{
     private SQLAccess databaseAccess;
     private ArrayList<String> orderedParts;
+    private int extraParts[];
     private int totalPrice;
 
     private String dbUsername;
@@ -44,7 +45,7 @@ public class Manager{
     /**
      * Resets the Manager instance, removing previous history.
      */
-    private void reset() throws SQLException, Exception{
+    public void reset() throws SQLException, Exception{
         if(databaseAccess != null){
             databaseAccess.close();
         }
