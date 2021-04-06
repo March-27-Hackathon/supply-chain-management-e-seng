@@ -97,7 +97,7 @@ import java.sql.*;
 
              String[] manufaclist = null;
              try{
-			    manufaclist= this.manage.getManufacturersList(adjective,noun);
+			    manufaclist= this.manage.getManufacturersList(noun);
              }catch(SQLException e){
                 System.out.println("Manufacturer list could not be retrieved");
                 e.printStackTrace();

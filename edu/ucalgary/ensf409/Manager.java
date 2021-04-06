@@ -98,15 +98,17 @@ public class Manager{
      * @throws SQLException
      * @throws Exception
 	 */
-	public String[] getManufacturersList(String descript, String item) throws SQLException, Exception{
+	public String[] getManufacturersList(String item) throws SQLException, Exception{
 		//return this.databaseAccess.getManuIDs(item, descript);
-		String temp[] = this.databaseAccess.getManuIDs(item, descript);
-		String arrtemp[][][]= new String[temp.length][][];
-		for(int i=0; i<temp.length;i++){
-		arrtemp[i]=this.databaseAccess.searchFor("MANUFACTURER", "ManuID", temp[i]);
-		}
-		for(int i=0; i<temp.length;i++){
-			temp[i]=arrtemp[i][0][1];
+		String temp[] = null;
+		if(item.equals("Chair")){
+			temp=this.databaseAccess.getChairManufacturer();
+		}else if(item.equals("Desk")){
+			temp=this.databaseAccess.getDeskManufacturer();
+		}else if(item.equals("Lamp")){
+			temp=this.databaseAccess.getLampManufacturer();
+		}else if(item.equals("Filing")){
+			temp=this.databaseAccess.getFilingManufacturer();
 		}
 		return temp;
 	}
