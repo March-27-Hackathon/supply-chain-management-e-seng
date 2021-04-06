@@ -40,7 +40,7 @@ import java.sql.*;
 				throw new IllegalArgumentException();
 			}
 			if(items[0]==null||items[1]==null){
-			 continue;
+			 throw new IllegalArgumentException();
 		 }
 		}catch(IllegalArgumentException e){
 			System.out.println("Invalid furniture type");
@@ -107,11 +107,13 @@ import java.sql.*;
 			 System.out.println("Suggested manufacturers are "+temp);
 			 System.exit(1);
 		 }
-		 }
+		 
 		 this.request+=" ";
 		 this.request+=quantity;
 		 this.manage.setFileName(code);
 		 this.confirm(hold);
+		 this.manage.reset();
+		 }
 	 }
 	 /**
 	 Private helper function whose job is to initialize the instance of Manager
