@@ -144,14 +144,27 @@ public class Manager{
         String[] fieldNames = databaseAccess.getFields(itemCategory);
         String[] partNames = isolateParts(fieldNames);
         
+        // Create a saved count of extra parts a purchased item might have
+        // which would not contribute to the current item if it isn't already.
+        if(extraParts == null){
+            extraParts = new int[partNames.length];
+            for(int index = 0; index < partNames.length; index++){
+                extraParts[index] = 0;
+            }
+        }
+
         // Store, in an array which parts have been satisfied. (initialized false)
         boolean hasPart[] = new boolean[partNames.length];
         for(int index = 0; index < partNames.length; index++){
-            hasPart[index] = false;
+            // if there are extra parts from before which can be used to build
+            // this next item, then we are good.
+            // Will default to "false" on first run.
+            hasPart[index] = extraParts[index] > 0;
         }
      
         boolean foundCheapest = false;
         String[] lowestIDs = new String[0];
+        String[][] lowestItems = new String[0][];
 
         final String FLAG_HAS = "Y";
         final String FLAG_NOT_HAS = "N";
@@ -173,9 +186,10 @@ public class Manager{
                     return new String[0];
                 }
                 for(String[] row : rows){
+                    //
                     if(orderedParts.size() > 0 && orderedParts.contains(row[0])){
                         continue;
-                    }
+                    }//*/
                     potentialItems = arrAppend(potentialItems, row);
                 }
             }
@@ -209,6 +223,7 @@ public class Manager{
                 lowestItem = focusItem;
             }
 
+            // Nothing found, cannot continue.
             if(lowestItem == null){
                 return new String[0];
             }
@@ -220,7 +235,8 @@ public class Manager{
                 hasPart[i-START_PADDING] = currentState || partFound;
             }
 
-            lowestIDs = arrAppend(lowestIDs, lowestItem[ID_INDEX]);
+            // lowestIDs = arrAppend(lowestIDs, lowestItem[ID_INDEX]);
+            lowestItems = arrAppend(lowestItems, lowestItem);
 
             foundCheapest = true;
             for(boolean partCheck : hasPart){
@@ -228,10 +244,37 @@ public class Manager{
             }
         }
 
+        // Save all IDs, count the number of remaining parts on file.
+
+        // Add the total number of every part that would be ordered
+        for(int index = 0; index < lowestItems.length; index++){
+            String[] item = lowestItems[index];
+            lowestIDs = arrAppend(lowestIDs, item[ID_INDEX]);
+            String[] parts = isolateParts(item);
+
+            for(int j = 0; j < parts.length; j++){
+                String partAvailable = parts[j];
+                System.out.println(partAvailable);
+                if(partAvailable.equals(FLAG_NOT_HAS)){
+                    continue;
+                }
+
+                extraParts[j]++;
+            }
+        }
+
+        // Remove one full item from the pile of parts.
+        for(int index = 0; index < extraParts.length; index++){
+            extraParts[index]--;
+            // DEBUG
+            System.out.println(index + " " + extraParts[index]);
+        }
+
         // DEBUG
-        /*for(String id: lowestIDs){
+        for(String id: lowestIDs){
             System.out.println(id);
         }//*/
+
         return lowestIDs;
     }
 
