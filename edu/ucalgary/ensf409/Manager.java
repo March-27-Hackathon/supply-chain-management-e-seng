@@ -416,6 +416,19 @@ public class Manager{
         return totalCost;
 
     }
+	/**
+	@param adjective String parameter is used to describe object
+	@param noun String parameter that describes the object
+	@return boolean returns whether such a furniture piece exists within the data based
+	simple function for determining whether a furniture piece exists in the data based
+	*/
+	public boolean verify(String adjective, String noun) throws SQLException, Exception{
+		String [][] temp=this.databaseAccess.searchFor(noun,"Type",adjective);
+		if(temp[0]!=null){
+			return true;
+		}
+		return false;
+	}
 
 
     /**

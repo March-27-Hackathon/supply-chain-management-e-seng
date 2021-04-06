@@ -27,6 +27,8 @@ import java.sql.*;
 		 double hold=-1;
 		 String code="";
 		 String quantity="";
+		 String adjective="";
+		 String noun="";
 		 while(true){
 		 System.out.println("Please enter your desired furniture type (e.g. 'desk lamp') or type 'Q' to quit:");
 		 this.request = System.console().readLine();
@@ -42,9 +44,25 @@ import java.sql.*;
 			if(items[0]==null||items[1]==null){
 			 throw new IllegalArgumentException();
 		 }
+		 adjective= items[0].substring(0,1).toUpperCase()+items[0].substring(1).toLowerCase();
+		noun= items[1].substring(0,1).toUpperCase()+items[1].substring(1).toLowerCase();
+		 if(!this.manage.verify(adjective,noun)){
+			 throw new IllegalArgumentException();
+		 }
 		}catch(IllegalArgumentException e){
 			System.out.println("Invalid furniture type");
 			continue;
+		}
+		catch(SQLException sql){
+			System.out.println("Invalid furniture type");
+			continue;
+			//System.err.println("Database error");
+			//System.exit(1);
+		}catch(Exception l){
+			System.out.println("Invalid furniture type");
+			continue;
+			//System.err.println("Unknown error");
+			//System.exit(1);
 		}
 		
 		 System.out.println("Please enter quantity:");
@@ -62,8 +80,6 @@ import java.sql.*;
 		 code+=items[0].charAt(0);
 		 code+=items[1].charAt(0);
 		 code+=quantity;
-		 String adjective= items[0].substring(0,1).toUpperCase()+items[0].substring(1).toLowerCase();
-		 String noun= items[1].substring(0,1).toUpperCase()+items[1].substring(1).toLowerCase();
 		 try{
 		 hold=manage.parseOrder(adjective,noun,quan);
 		 }catch(SQLException ex){
