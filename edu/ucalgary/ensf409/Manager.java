@@ -45,13 +45,14 @@ public class Manager{
     /**
      * Resets the Manager instance, removing previous history.
      */
-    private void reset() throws SQLException, Exception{
+    public void reset() throws SQLException, Exception{
         if(databaseAccess != null){
             databaseAccess.close();
         }
 
         databaseAccess = new SQLAccess(dbUsername, dbPassword, dbUrl);
         orderedParts = new ArrayList<String>();
+        extraParts = null;
         totalPrice = 0;
     }
 
