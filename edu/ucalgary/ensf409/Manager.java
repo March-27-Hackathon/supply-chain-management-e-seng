@@ -179,7 +179,7 @@ public class Manager{
             // Get all items that contain some number of the missing parts
             String potentialItems[][] = new String[0][partNames.length+4];
             for(int index = 0; index < partNames.length; index++){
-                if(hasPart[index]){continue;}
+                // if(hasPart[index]){continue;}
                 String partName = partNames[index];
                 String[][] rows = databaseAccess.filter(itemCategory, itemType, partName, FLAG_HAS);
                 if(rows.length == 0){
@@ -203,7 +203,7 @@ public class Manager{
                 int hasPartCount = 0;
                 String[] focusItem = potentialItems[index];
                 for(int j = START_PADDING; j < focusItem.length - END_PADDING; j++){
-                    if(focusItem[j].equals(FLAG_NOT_HAS) || hasPart[j-START_PADDING]){
+                    if(focusItem[j].equals(FLAG_NOT_HAS)){// || hasPart[j-START_PADDING]){
                         continue;
                     }
 
@@ -217,7 +217,7 @@ public class Manager{
                 }
 
                 // DEBUG
-                // System.out.println(costPerPart + " " + focusItem[ID_INDEX] + " " + focusItem[COST_INDEX] + " " + hasPartCount);
+                System.out.println(costPerPart + " " + focusItem[ID_INDEX] + " " + focusItem[COST_INDEX] + " " + hasPartCount);
 
                 lowestCost = costPerPart;
                 lowestItem = focusItem;
@@ -229,14 +229,20 @@ public class Manager{
             }
 
             // Check which parts still need to be found;
-            for(int i = START_PADDING; i < lowestItem.length - END_PADDING; i++){
-                boolean currentState = hasPart[i-START_PADDING];
-                boolean partFound = lowestItem[i].equals(FLAG_HAS);
-                hasPart[i-START_PADDING] = currentState || partFound;
+            for(String[] item : lowestItems){
+                for(int i = START_PADDING; i < lowestItem.length - END_PADDING; i++){
+                    boolean currentState = hasPart[i-START_PADDING];
+                    // boolean partFound = lowestItem[i].equals(FLAG_HAS);
+                    boolean partFound = item[i].equals(FLAG_HAS);
+                    hasPart[i-START_PADDING] = currentState || partFound;
+                    // DEBUG
+                    System.out.println(item[ID_INDEX] + " " + i + " " + hasPart[i-START_PADDING]);
+                }
             }
 
             // lowestIDs = arrAppend(lowestIDs, lowestItem[ID_INDEX]);
             lowestItems = arrAppend(lowestItems, lowestItem);
+            potentialItems = arrRemove(potentialItems, lowestItem);
 
             foundCheapest = true;
             for(boolean partCheck : hasPart){
