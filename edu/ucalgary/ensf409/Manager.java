@@ -45,7 +45,7 @@ public class Manager{
     /**
      * Resets the Manager instance, removing previous history.
      */
-    private void reset() throws SQLException, Exception{
+    public void reset() throws SQLException, Exception{
         if(databaseAccess != null){
             databaseAccess.close();
         }

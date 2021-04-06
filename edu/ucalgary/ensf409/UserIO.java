@@ -27,7 +27,7 @@ import java.sql.*;
 		 double hold=-1;
 		 String code="";
 		 String quantity="";
-		 while(hold==-1){
+		 while(true){
 		 System.out.println("Please enter your desired furniture type (e.g. 'desk lamp') or type 'Q' to quit:");
 		 this.request = System.console().readLine();
 		 if(this.request.equalsIgnoreCase("Q")){
@@ -105,14 +105,23 @@ import java.sql.*;
 			 temp+="and ";
 			 temp+=manufaclist[manufaclist.length-1];
 			 System.out.println("Suggested manufacturers are "+temp);
-			 System.exit(1);
+			 continue;
 		 }
 		 
 		 this.request+=" ";
 		 this.request+=quantity;
 		 this.manage.setFileName(code);
 		 this.confirm(hold);
+		 try{
 		 this.manage.reset();
+		 }catch(SQLException qwe){
+			 System.err.println("Data base error");
+			 System.exit(1);
+		 }
+		 catch(Exception q){
+			 System.err.println("Unexpected error");
+			 System.exit(1);
+		 }
 		 }
 	 }
 	 /**
@@ -168,7 +177,7 @@ import java.sql.*;
 			 System.out.println("Order confirmed successfully, Please see order form");
 			 break;
 		 }else if(response.equalsIgnoreCase("n")){
-			 System.out.println("Order not confirmed. Goodbye");
+			 System.out.println("Order not confirmed");
 			 break;
 		 }else{
 			 System.out.println("Invalid response");
