@@ -225,7 +225,7 @@ public class Manager{
                 }
 
                 // DEBUG
-                System.out.println(costPerPart + " " + focusItem[ID_INDEX] + " " + focusItem[COST_INDEX] + " " + hasPartCount);
+                // System.out.println(costPerPart + " " + focusItem[ID_INDEX] + " " + focusItem[COST_INDEX] + " " + hasPartCount);
 
                 lowestCost = costPerPart;
                 lowestItem = focusItem;
@@ -237,7 +237,7 @@ public class Manager{
             }
 
             // DEBUG
-            System.out.println("Lowest item is: " + lowestItem[ID_INDEX]);
+            // System.out.println("Lowest item is: " + lowestItem[ID_INDEX]);
 
             // lowestIDs = arrAppend(lowestIDs, lowestItem[ID_INDEX]);
             lowestItems = arrAppend(lowestItems, lowestItem);
@@ -271,7 +271,7 @@ public class Manager{
 
             for(int j = 0; j < parts.length; j++){
                 String partAvailable = parts[j];
-                System.out.println(partAvailable);
+                // System.out.println(partAvailable);
                 if(partAvailable.equals(FLAG_NOT_HAS)){
                     continue;
                 }
@@ -284,10 +284,10 @@ public class Manager{
         for(int index = 0; index < extraParts.length; index++){
             extraParts[index]--;
             // DEBUG
-            System.out.println("COUNT: " + index + " " + extraParts[index]);
+            // System.out.println("COUNT: " + index + " " + extraParts[index]);
         }
 
-        // DEBUG
+        /*/ DEBUG
         for(String id: lowestIDs){
             System.out.println(id);
         }//*/
@@ -451,7 +451,7 @@ public class Manager{
         double totalCost = 0;
         for(String id : ids){
             // DEBUG
-            System.out.println("purchasing: " + id);
+            // System.out.println("purchasing: " + id);
 
             // :/
             String[][] itemRows = databaseAccess.searchFor(itemCategory, "ID", id);
