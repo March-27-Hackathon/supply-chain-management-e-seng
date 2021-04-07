@@ -316,4 +316,68 @@ public class SQLAccessTest {
 
         assertEquals (ids, orig);
     }
+
+    @Test
+    /**
+     * Testing Desk Manufacturer getter function.
+     */
+    public void getDeskManufacturerTest () throws SQLException, Exception {
+        SQLAccess access = new SQLAccess(USERNAME, PASSWORD, DBURL);
+
+        String [] expected = {"002", "005", "001", "004"};
+
+        String [] results = access.getDeskManufacturer();
+
+        access.close();
+
+        assertEquals (results, expected);
+    }
+
+    @Test
+    /**
+     * Testing Lamp Manufacuter getter function.
+     */
+    public void getLampManufacturerTest () throws SQLException, Exception {
+        SQLAccess access = new SQLAccess(USERNAME, PASSWORD, DBURL);
+
+        String [] expected = {"004", "002", "005"};
+
+        String [] results = access.getLampManufacturer();
+
+        access.close();
+
+        assertEquals (results, expected);
+    }
+
+    @Test
+    /**
+     * Testing Filing Manufacuter getter function.
+     */
+    public void getFilingManufacturerTest () throws SQLException, Exception {
+        SQLAccess access = new SQLAccess(USERNAME, PASSWORD, DBURL);
+
+        String [] expected = {"005", "004", "002"};
+
+        String [] results = access.getFilingManufacturer();
+
+        access.close();
+
+        assertEquals (results, expected);
+    }
+
+    @Test
+    /**
+     * Testing Chair Manufacuter getter function.
+     */
+    public void getChairManufacturerTest () throws SQLException, Exception {
+        SQLAccess access = new SQLAccess(USERNAME, PASSWORD, DBURL);
+
+        String [] expected = {"002", "005", "003", "004"};
+
+        String [] results = access.getChairManufacturer();
+
+        access.close();
+
+        assertEquals (results, expected);
+    }
 }
