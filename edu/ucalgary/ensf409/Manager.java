@@ -211,7 +211,7 @@ public class Manager{
                 int hasPartCount = 0;
                 String[] focusItem = potentialItems[index];
                 for(int j = START_PADDING; j < focusItem.length - END_PADDING; j++){
-                    if(focusItem[j].equals(FLAG_NOT_HAS) || hasPart[j-START_PADDING]){
+                    if(focusItem[j].equals(FLAG_NOT_HAS) || extraParts[j-START_PADDING] > 0){
                         continue;
                     }
 
@@ -247,8 +247,8 @@ public class Manager{
             for(String[] item : lowestItems){
                 for(int i = START_PADDING; i < lowestItem.length - END_PADDING; i++){
                     boolean currentState = hasPart[i-START_PADDING];
-                    // boolean partFound = lowestItem[i].equals(FLAG_HAS);
-                    boolean partFound = item[i].equals(FLAG_HAS);
+                    boolean partFound = lowestItem[i].equals(FLAG_HAS);
+                    // boolean partFound = item[i].equals(FLAG_HAS);
                     hasPart[i-START_PADDING] = currentState || partFound;
                     // DEBUG
                     // System.out.println(item[ID_INDEX] + " " + i + " " + hasPart[i-START_PADDING]);
