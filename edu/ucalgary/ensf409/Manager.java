@@ -179,21 +179,30 @@ public class Manager{
             // Get all items that contain some number of the missing parts
             String potentialItems[][] = new String[0][partNames.length+4];
             for(int index = 0; index < partNames.length; index++){
-                // if(hasPart[index]){continue;}
+                if(hasPart[index]){
+                    continue;
+                }
                 String partName = partNames[index];
                 String[][] rows = databaseAccess.filter(itemCategory, itemType, partName, FLAG_HAS);
+                // DEBUG
+                System.out.println("l: " + rows.length);
                 if(rows.length == 0){
                     return new String[0];
                 }
                 for(String[] row : rows){
                     //
-                    if(orderedParts.size() > 0 && orderedParts.contains(row[0])){
+                    if(orderedParts.size() > 0 && orderedParts.contains(row[ID_INDEX])){
                         continue;
                     }//*/
+
                     potentialItems = arrAppend(potentialItems, row);
                 }
             }
 
+            // DEBUG
+            for(String[] item : potentialItems){
+                System.out.println(item[ID_INDEX]);
+            }
 
             // Find cheapest item per part
             // ie. minimize price per part
@@ -203,7 +212,7 @@ public class Manager{
                 int hasPartCount = 0;
                 String[] focusItem = potentialItems[index];
                 for(int j = START_PADDING; j < focusItem.length - END_PADDING; j++){
-                    if(focusItem[j].equals(FLAG_NOT_HAS)){// || hasPart[j-START_PADDING]){
+                    if(focusItem[j].equals(FLAG_NOT_HAS) || hasPart[j-START_PADDING]){
                         continue;
                     }
 
@@ -228,6 +237,11 @@ public class Manager{
                 return new String[0];
             }
 
+
+            // lowestIDs = arrAppend(lowestIDs, lowestItem[ID_INDEX]);
+            lowestItems = arrAppend(lowestItems, lowestItem);
+            // potentialItems = arrRemove(potentialItems, lowestItem);
+
             // Check which parts still need to be found;
             for(String[] item : lowestItems){
                 for(int i = START_PADDING; i < lowestItem.length - END_PADDING; i++){
@@ -239,10 +253,6 @@ public class Manager{
                     System.out.println(item[ID_INDEX] + " " + i + " " + hasPart[i-START_PADDING]);
                 }
             }
-
-            // lowestIDs = arrAppend(lowestIDs, lowestItem[ID_INDEX]);
-            lowestItems = arrAppend(lowestItems, lowestItem);
-            potentialItems = arrRemove(potentialItems, lowestItem);
 
             foundCheapest = true;
             for(boolean partCheck : hasPart){
@@ -440,7 +450,11 @@ public class Manager{
         double totalCost = 0;
         for(String id : ids){
             // :/
-            String[] itemRow = databaseAccess.searchFor(itemCategory, "ID", id)[0];
+            String[][] itemRows = databaseAccess.searchFor(itemCategory, "ID", id);
+            if(itemRows.length == 0){
+                System.out.println("???????? " + id);
+            }
+            String[] itemRow = itemRows[0];
             String priceStr = itemRow[priceIndex];
             totalCost += Double.parseDouble(priceStr);
         }
