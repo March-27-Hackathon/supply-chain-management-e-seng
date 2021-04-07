@@ -85,9 +85,9 @@ public class Manager{
 	 */
 	public void setFileName(String fileName){
 	    this.fileName=fileName;
-	}
-	
-    
+    }
+
+
     /**
 	 * Simple function that calls a database function to find a list of
 	 * manufacturers based on the desired item
@@ -189,6 +189,7 @@ public class Manager{
         String[] lowestIDs = new String[0];
         String[][] lowestItems = new String[0][];
 
+        // set some constants for readability
         final String FLAG_HAS = "Y";
         final String FLAG_NOT_HAS = "N";
         final int START_PADDING = 2;
@@ -202,31 +203,45 @@ public class Manager{
             // Get all items that contain some number of the missing parts
             String potentialItems[][] = new String[0][partNames.length+4];
             for(int index = 0; index < partNames.length; index++){
-                if(hasPart[index]){continue;}
+                if(hasPart[index]){
+                    continue;
+                }
+
+                // Get every item with each part
                 String partName = partNames[index];
                 String[][] rows = databaseAccess.filter(itemCategory, itemType, partName, FLAG_HAS);
                 if(rows.length == 0){
                     return new String[0];
                 }
                 for(String[] row : rows){
-                    //
-                    if(orderedParts.size() > 0 && orderedParts.contains(row[0])){
+                    // Ignore the item if it's already been ordered
+                    if(orderedParts.size() > 0 && orderedParts.contains(row[ID_INDEX])){
                         continue;
-                    }//*/
+                    }
+
                     potentialItems = arrAppend(potentialItems, row);
                 }
             }
 
+            // DEBUG
+            /*/
+            for(String[] item : potentialItems){
+                System.out.println(item[ID_INDEX]);
+            }//*/
 
             // Find cheapest item per part
             // ie. minimize price per part
             double lowestCost = MAX;
             String[] lowestItem = null;
+
             for(int index = 0; index < potentialItems.length; index++){
                 int hasPartCount = 0;
                 String[] focusItem = potentialItems[index];
+
+                // minimize the average price across multiple parts an item has
+                // ie. most parts for the price
                 for(int j = START_PADDING; j < focusItem.length - END_PADDING; j++){
-                    if(focusItem[j].equals(FLAG_NOT_HAS) || hasPart[j-START_PADDING]){
+                    if(focusItem[j].equals(FLAG_NOT_HAS) || extraParts[j-START_PADDING] > 0){
                         continue;
                     }
 
@@ -246,20 +261,27 @@ public class Manager{
                 lowestItem = focusItem;
             }
 
+            // by this point, all potential items have been checked and 
+            // the best value item has been found
+
             // Nothing found, cannot continue.
             if(lowestItem == null){
                 return new String[0];
             }
+
+            // DEBUG
+            // System.out.println("Lowest item is: " + lowestItem[ID_INDEX]);
+
+            lowestItems = arrAppend(lowestItems, lowestItem);
 
             // Check which parts still need to be found;
             for(int i = START_PADDING; i < lowestItem.length - END_PADDING; i++){
                 boolean currentState = hasPart[i-START_PADDING];
                 boolean partFound = lowestItem[i].equals(FLAG_HAS);
                 hasPart[i-START_PADDING] = currentState || partFound;
+                // DEBUG
+                // System.out.println(item[ID_INDEX] + " " + i + " " + hasPart[i-START_PADDING]);
             }
-
-            // lowestIDs = arrAppend(lowestIDs, lowestItem[ID_INDEX]);
-            lowestItems = arrAppend(lowestItems, lowestItem);
 
             foundCheapest = true;
             for(boolean partCheck : hasPart){
@@ -275,9 +297,10 @@ public class Manager{
             lowestIDs = arrAppend(lowestIDs, item[ID_INDEX]);
             String[] parts = isolateParts(item);
 
+            // Determine if there are extra parts left over from this combination
             for(int j = 0; j < parts.length; j++){
                 String partAvailable = parts[j];
-                //System.out.println(partAvailable);
+                // System.out.println(partAvailable);
                 if(partAvailable.equals(FLAG_NOT_HAS)){
                     continue;
                 }
@@ -290,13 +313,13 @@ public class Manager{
         for(int index = 0; index < extraParts.length; index++){
             extraParts[index]--;
             // DEBUG
-           // System.out.println(index + " " + extraParts[index]);
+            // System.out.println("COUNT: " + index + " " + extraParts[index]);
         }
 
-        // DEBUG
-       // for(String id: lowestIDs){
-          //  System.out.println(id);
-    //    }//*/
+        /*/ DEBUG
+        for(String id: lowestIDs){
+            System.out.println(id);
+        }//*/
 
         return lowestIDs;
     }
@@ -402,6 +425,32 @@ public class Manager{
         return returnedArray;
     }
 
+    
+    /**
+     * Removes a specific object within a String array.
+     * Also makes the array one element smaller.
+     *
+     * @param original The String array to remove items from.
+     * @param ignoreIndex The item that needs to be removed.
+     *
+     * @return A smaller string array without the specified item.
+     */
+    private String[][] arrRemove(String[][] original, String item[]){
+        String[][] returnedArray = new String[original.length-1][];
+
+        int index = 0;
+        for(String[] origStr : original){
+            if(origStr.equals(item)){
+                continue;
+            }
+
+            returnedArray[index] = origStr;
+            index++;
+        }
+
+        return returnedArray;
+    }
+
 
     /**
      * Gets the total cost of all items within the given array of IDs.
@@ -430,8 +479,12 @@ public class Manager{
 
         double totalCost = 0;
         for(String id : ids){
+            // DEBUG
+            // System.out.println("purchasing: " + id);
+
             // :/
-            String[] itemRow = databaseAccess.searchFor(itemCategory, "ID", id)[0];
+            String[][] itemRows = databaseAccess.searchFor(itemCategory, "ID", id);
+            String[] itemRow = itemRows[0];
             String priceStr = itemRow[priceIndex];
             totalCost += Double.parseDouble(priceStr);
         }
@@ -439,7 +492,9 @@ public class Manager{
         return totalCost;
 
     }
-	/**
+
+
+    /**
 	@param adjective String parameter is used to describe object
 	@param noun String parameter that describes the object
 	@return boolean returns whether such a furniture piece exists within the data based
