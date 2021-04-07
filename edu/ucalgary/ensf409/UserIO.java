@@ -39,7 +39,7 @@ import java.io.*;
 		 }
 		String [] items=this.request.split(" ");
 		try{
-			if(items.length>2){
+			if(items.length>2||items.length<=1){
 				throw new IllegalArgumentException();
 			}
 			if(items[0]==null||items[1]==null){
