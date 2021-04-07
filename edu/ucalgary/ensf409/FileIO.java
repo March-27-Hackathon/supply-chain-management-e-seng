@@ -17,8 +17,9 @@ public class FileIO{ // Start of FileIO class
 	
 	/**
 	@param order String parameter that is defined as two chars followed by a number
-	Constructor that takes in a String related to the order, if such a file name already exists, 
-	adds the most recently available number to the end of the file name e.g. orderEC2(1).txt, 
+	Constructor that takes in a String related to the order, so the item's intials followed by quantity
+	and appends the current date and time to the end
+	i.e. 'orderMC106042021-211455.txt'
 	sets FILENAME and fileOut
 	*/
 	public FileIO(String order){
