@@ -7,6 +7,7 @@
 
 package edu.ucalgary.ensf409;
 import java.sql.*;
+import java.io.*;
  /**
  Dedicated class for User interfacing, currently uses the terminal, this may change
  */
@@ -27,6 +28,8 @@ import java.sql.*;
 		 double hold=-1;
 		 String code="";
 		 String quantity="";
+		 String adjective="";
+		 String noun="";
 		 while(true){
 		 System.out.println("Please enter your desired furniture type (e.g. 'desk lamp') or type 'Q' to quit:");
 		 this.request = System.console().readLine();
@@ -36,13 +39,25 @@ import java.sql.*;
 		 }
 		String [] items=this.request.split(" ");
 		try{
-			if(items.length>2){
+			if(items.length>2||items.length<=1){
 				throw new IllegalArgumentException();
 			}
 			if(items[0]==null||items[1]==null){
 			 throw new IllegalArgumentException();
 		 }
+		 adjective= items[0].substring(0,1).toUpperCase()+items[0].substring(1).toLowerCase();
+		noun= items[1].substring(0,1).toUpperCase()+items[1].substring(1).toLowerCase();
+		 if(!this.manage.verify(adjective,noun)){
+			 throw new IllegalArgumentException();
+		 }
 		}catch(IllegalArgumentException e){
+			System.out.println("Invalid furniture type");
+			continue;
+		}
+		catch(SQLException sql){
+			System.out.println("Invalid furniture type");
+			continue;
+		}catch(Exception l){
 			System.out.println("Invalid furniture type");
 			continue;
 		}
@@ -59,11 +74,6 @@ import java.sql.*;
 			 System.out.println("Invalid quantity");
 			 continue;
 		 }
-		 code+=items[0].charAt(0);
-		 code+=items[1].charAt(0);
-		 code+=quantity;
-		 String adjective= items[0].substring(0,1).toUpperCase()+items[0].substring(1).toLowerCase();
-		 String noun= items[1].substring(0,1).toUpperCase()+items[1].substring(1).toLowerCase();
 		 try{
 		 hold=manage.parseOrder(adjective,noun,quan);
 		 }catch(SQLException ex){
@@ -81,7 +91,7 @@ import java.sql.*;
 
              String[] manufaclist = null;
              try{
-			    manufaclist= this.manage.getManufacturersList(adjective,noun);
+			    manufaclist= this.manage.getManufacturersList(noun);
              }catch(SQLException e){
                 System.out.println("Manufacturer list could not be retrieved");
                 e.printStackTrace();
@@ -108,6 +118,10 @@ import java.sql.*;
 			 continue;
 		 }
 		 
+		 code="";
+		 code+=items[0].charAt(0);
+		 code+=items[1].charAt(0);
+		 code+=quantity;
 		 this.request+=" ";
 		 this.request+=quantity;
 		 this.manage.setFileName(code);
@@ -133,7 +147,9 @@ import java.sql.*;
 		 System.out.println("Please Enter username:");
 		 String user=System.console().readLine();
 		 System.out.println("Please Enter password:");
-		 String pass=System.console().readLine();
+		Console con=System.console();
+		char [] pas=con.readPassword();
+		 String pass= new String(pas);
 		 System.out.println("Please Enter database URL in the form (jdbc:mysql://localhost/INVENTORY):");
 		 String dburl=System.console().readLine();
 		 try{
