@@ -6,6 +6,8 @@
  */
 package edu.ucalgary.ensf409;
 import java.io.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 /**
 Dedicated class for handling the writing to the output file
 */
@@ -20,25 +22,14 @@ public class FileIO{ // Start of FileIO class
 	sets FILENAME and fileOut
 	*/
 	public FileIO(String order){
+		LocalDateTime orderTime=LocalDateTime.now();
+		DateTimeFormatter properTime = DateTimeFormatter.ofPattern("ddMMyyyy-HHmmss");
 		String temp = "order";
 		temp+=order.toUpperCase();
+		temp+=orderTime.format(properTime);
+		System.out.println(temp);
 		temp+=".txt";
 		File check= new File(temp);
-		int b=1;
-		while(check.exists()){
-			String other="("+String.valueOf(b)+")";
-			int i= temp.indexOf('.');
-			temp=temp.substring(0,i);
-			int c=temp.indexOf('(');
-			if(c!=-1){
-				temp=temp.substring(0,c);
-			}
-			temp+=other;
-			temp+=".txt";
-			check=new File(temp);
-			b++;
-		}
-		System.out.println(temp);
 		this.FILENAME=new String(temp);
 		this.fileOut=new File(this.FILENAME);
 	}

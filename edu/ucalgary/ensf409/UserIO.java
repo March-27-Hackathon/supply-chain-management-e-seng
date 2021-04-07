@@ -7,6 +7,7 @@
 
 package edu.ucalgary.ensf409;
 import java.sql.*;
+import java.io.*;
  /**
  Dedicated class for User interfacing, currently uses the terminal, this may change
  */
@@ -56,13 +57,9 @@ import java.sql.*;
 		catch(SQLException sql){
 			System.out.println("Invalid furniture type");
 			continue;
-			//System.err.println("Database error");
-			//System.exit(1);
 		}catch(Exception l){
 			System.out.println("Invalid furniture type");
 			continue;
-			//System.err.println("Unknown error");
-			//System.exit(1);
 		}
 		
 		 System.out.println("Please enter quantity:");
@@ -77,9 +74,6 @@ import java.sql.*;
 			 System.out.println("Invalid quantity");
 			 continue;
 		 }
-		 code+=items[0].charAt(0);
-		 code+=items[1].charAt(0);
-		 code+=quantity;
 		 try{
 		 hold=manage.parseOrder(adjective,noun,quan);
 		 }catch(SQLException ex){
@@ -124,6 +118,10 @@ import java.sql.*;
 			 continue;
 		 }
 		 
+		 code="";
+		 code+=items[0].charAt(0);
+		 code+=items[1].charAt(0);
+		 code+=quantity;
 		 this.request+=" ";
 		 this.request+=quantity;
 		 this.manage.setFileName(code);
@@ -149,7 +147,9 @@ import java.sql.*;
 		 System.out.println("Please Enter username:");
 		 String user=System.console().readLine();
 		 System.out.println("Please Enter password:");
-		 String pass=System.console().readLine();
+		Console con=System.console();
+		char [] pas=con.readPassword();
+		 String pass= new String(pas);
 		 System.out.println("Please Enter database URL in the form (jdbc:mysql://localhost/INVENTORY):");
 		 String dburl=System.console().readLine();
 		 try{
