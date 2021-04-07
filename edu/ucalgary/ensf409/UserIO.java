@@ -6,7 +6,8 @@
  */
 
 package edu.ucalgary.ensf409;
-
+import java.sql.*;
+import java.io.*;
  /**
  Dedicated class for User interfacing, currently uses the terminal, this may change
  */
@@ -27,44 +28,85 @@ package edu.ucalgary.ensf409;
 		 double hold=-1;
 		 String code="";
 		 String quantity="";
-		 while(hold==-1){
-		 System.out.println("Please enter your desired furniture type or type 'Q' to quit:");
+		 String adjective="";
+		 String noun="";
+		 while(true){
+		 System.out.println("Please enter your desired furniture type (e.g. 'desk lamp') or type 'Q' to quit:");
 		 this.request = System.console().readLine();
+		  this.request=this.request.trim();
 		 if(this.request.equalsIgnoreCase("Q")){
 			 System.exit(1);
 		 }
+		String [] items=this.request.split(" ");
+		try{
+			if(items.length>2||items.length<=1){
+				throw new IllegalArgumentException();
+			}
+			if(items[0]==null||items[1]==null){
+			 throw new IllegalArgumentException();
+		 }
+		 adjective= items[0].substring(0,1).toUpperCase()+items[0].substring(1).toLowerCase();
+		noun= items[1].substring(0,1).toUpperCase()+items[1].substring(1).toLowerCase();
+		 if(!this.manage.verify(adjective,noun)){
+			 throw new IllegalArgumentException();
+		 }
+		}catch(IllegalArgumentException e){
+			System.out.println("Invalid furniture type");
+			continue;
+		}
+		catch(SQLException sql){
+			System.out.println("Invalid furniture type");
+			continue;
+		}catch(Exception l){
+			System.out.println("Invalid furniture type");
+			continue;
+		}
+		
 		 System.out.println("Please enter quantity:");
 		quantity=System.console().readLine();
-		 this.request=this.request.trim();
-		String [] items=this.request.split(" ");
 		 quantity=quantity.trim();
 		 try{
 		 quan = Integer.parseInt(quantity);
 		 if(quan<=0){
 			 throw new IllegalArgumentException();
 		 }
-		 if(items.length>2){
-			 throw new Exception();
-		 }
-		 if(items[0]==null||items[1]==null){
-			 continue;
-		 }
 		 }catch(IllegalArgumentException ex){
 			 System.out.println("Invalid quantity");
 			 continue;
-		 }catch(Exception e){
+		 }
+		 try{
+		 hold=manage.parseOrder(adjective,noun,quan);
+		 }catch(SQLException ex){
 			 System.out.println("Invalid furniture type");
 			 continue;
+		 }catch(Exception exc){
+			 System.out.println("Unexpected Error");
+			 exc.printStackTrace();
+			 System.exit(1);
 		 }
-		 code+=items[0].charAt(0);
-		 code+=items[1].charAt(0);
-		 code+=quantity;
-		 hold=manage.parseOrder(items[0].toLowerCase(),items[1].toLowerCase(),quan);
 		 if(hold==-1){
 			 System.out.println("Invalid furniture type");
 		 }else if(hold==-2){
 			 System.out.println("Order cannot be fulfilled based on current inventory");
-			 String[] manufaclist= this.manage.getManufacturersList(items[0].toLowerCase(),items[1].toLowerCase());
+
+             String[] manufaclist = null;
+             try{
+			    manufaclist= this.manage.getManufacturersList(noun);
+             }catch(SQLException e){
+                System.out.println("Manufacturer list could not be retrieved");
+                e.printStackTrace();
+                System.exit(1);
+             }catch(Exception e){
+                System.out.println("Unexpected error reached");
+                e.printStackTrace();
+                System.exit(1);
+             }
+
+             if(manufaclist == null){
+                System.out.println("Unexpected error reached");
+                System.exit(1);
+             }
+
 			 String temp="";
 			 for(int i=0; i<manufaclist.length-1; i++){
 				 temp+=manufaclist[i];
@@ -73,26 +115,55 @@ package edu.ucalgary.ensf409;
 			 temp+="and ";
 			 temp+=manufaclist[manufaclist.length-1];
 			 System.out.println("Suggested manufacturers are "+temp);
-			 System.exit(1);
+			 continue;
 		 }
-		 }
+		 
+		 code="";
+		 code+=items[0].charAt(0);
+		 code+=items[1].charAt(0);
+		 code+=quantity;
 		 this.request+=" ";
 		 this.request+=quantity;
 		 this.manage.setFileName(code);
 		 this.confirm(hold);
+		 try{
+		 this.manage.reset();
+		 }catch(SQLException qwe){
+			 System.err.println("Data base error");
+			 System.exit(1);
+		 }
+		 catch(Exception q){
+			 System.err.println("Unexpected error");
+			 System.exit(1);
+		 }
+		 }
 	 }
 	 /**
 	 Private helper function whose job is to initialize the instance of Manager
 	 prompts the user for the required database credentials
 	 */
 	 private void initializeManage(){
+		 while(true){
 		 System.out.println("Please Enter username:");
 		 String user=System.console().readLine();
-		 System.out.println("Please Enter password");
-		 String pass=System.console().readLine();
-		 System.out.println("Please Enter DataBase URL in the form (jdbc:mysql://localhost/INVENTORY)");
+		 System.out.println("Please Enter password:");
+		Console con=System.console();
+		char [] pas=con.readPassword();
+		 String pass= new String(pas);
+		 System.out.println("Please Enter database URL in the form (jdbc:mysql://localhost/INVENTORY):");
 		 String dburl=System.console().readLine();
+		 try{
 		 this.manage= new Manager(user,pass,dburl);
+		 }catch(SQLException exp){
+			 System.out.println("Error connecting to database");
+			 continue;
+		 }catch(Exception pez){
+			 System.out.println("Unexpected Error");
+			 pez.printStackTrace();
+			 System.exit(1);
+		 }
+		 break;
+		 }
 	 }
 	 /**
 	 @param value double parameter that respresents total price
@@ -108,11 +179,21 @@ package edu.ucalgary.ensf409;
 		 String response=System.console().readLine();
 		 response=response.trim();
 		 if(response.equalsIgnoreCase("y")){
+			 try{
 			 this.manage.confirmOrder(this.request);
+			 }catch(SQLException ekc){
+				 System.out.println("Error saving data base");
+				 ekc.printStackTrace();
+				 System.exit(1);
+			 }catch(Exception loss){
+				 System.out.println("Unexpected error");
+				 loss.printStackTrace();
+				 System.exit(1);
+			 }
 			 System.out.println("Order confirmed successfully, Please see order form");
 			 break;
 		 }else if(response.equalsIgnoreCase("n")){
-			 System.out.println("Order not confirmed. Goodbye");
+			 System.out.println("Order not confirmed");
 			 break;
 		 }else{
 			 System.out.println("Invalid response");

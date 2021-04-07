@@ -6,6 +6,8 @@
  */
 package edu.ucalgary.ensf409;
 import java.io.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 /**
 Dedicated class for handling the writing to the output file
 */
@@ -15,30 +17,20 @@ public class FileIO{ // Start of FileIO class
 	
 	/**
 	@param order String parameter that is defined as two chars followed by a number
-	Constructor that takes in a String related to the order, if such a file name already exists, 
-	adds the most recently available number to the end of the file name e.g. orderEC2(1).txt, 
+	Constructor that takes in a String related to the order, so the item's intials followed by quantity
+	and appends the current date and time to the end
+	i.e. 'orderMC106042021-211455.txt'
 	sets FILENAME and fileOut
 	*/
 	public FileIO(String order){
+		LocalDateTime orderTime=LocalDateTime.now();
+		DateTimeFormatter properTime = DateTimeFormatter.ofPattern("ddMMyyyy-HHmmss");
 		String temp = "order";
 		temp+=order.toUpperCase();
+		temp+=orderTime.format(properTime);
+		System.out.println(temp);
 		temp+=".txt";
 		File check= new File(temp);
-		int b=1;
-		while(check.exists()){
-			String other="("+String.valueOf(b)+")";
-			int i= temp.indexOf('.');
-			temp=temp.substring(0,i);
-			int c=temp.indexOf('(');
-			if(c!=-1){
-				temp=temp.substring(0,c);
-			}
-			temp+=other;
-			temp+=".txt";
-			check=new File(temp);
-			b++;
-		}
-		System.out.println(temp);
 		this.FILENAME=new String(temp);
 		this.fileOut=new File(this.FILENAME);
 	}
@@ -75,6 +67,5 @@ public class FileIO{ // Start of FileIO class
 			System.exit(1);
 		}
 		
-	}
-		
+    }			
 }

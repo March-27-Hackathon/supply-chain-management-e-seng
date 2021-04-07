@@ -1,7 +1,8 @@
 /**
  * @author Amir Abdrakmanov, Ethan Sengsavang, Liana Goodman
  *
- * @version 1.0
+ * @version 1.1 - Exception handling
+ * 1.0 - Basic functionality
  * @since 1.0
  */
 
@@ -9,10 +10,22 @@ package edu.ucalgary.ensf409;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.sql.SQLException;
 
+
+/**
+ * Manage data collected from the database and pass that data into the file
+ * writer if a possible order can be made.
+ * This will use information of the desired order from UserIO to call
+ * SQLAccess to query.
+ * This will determine the total cost, and the minimal cost for complete items.
+ *
+ * @author Ethan Sengsavang
+ */
 public class Manager{
     private SQLAccess databaseAccess;
     private ArrayList<String> orderedParts;
+    private int extraParts[];
     private int totalPrice;
 
     private String dbUsername;
@@ -20,12 +33,8 @@ public class Manager{
     private String dbUrl;
     private String fileName;
 
-    public static void main (String [] args) {
-        Manager manager = new Manager ("ensf409", "ensf409", "jdbc:mysql://localhost/INVENTORY");
-        String [] arr = manager.findCheapestItems("mesh", "chair");
-    }
 
-    public Manager(String dbUsername, String dbPassword, String dbUrl){
+    public Manager(String dbUsername, String dbPassword, String dbUrl) throws SQLException, Exception{
         this.dbUsername = dbUsername;
         this.dbPassword = dbPassword;
         this.dbUrl = dbUrl;
@@ -36,27 +45,30 @@ public class Manager{
     /**
      * Resets the Manager instance, removing previous history.
      */
-    private void reset(){
+    public void reset() throws SQLException, Exception{
         if(databaseAccess != null){
             databaseAccess.close();
         }
 
         databaseAccess = new SQLAccess(dbUsername, dbPassword, dbUrl);
         orderedParts = new ArrayList<String>();
+        extraParts = null;
         totalPrice = 0;
     }
 
 
     /**
-	 * @param origReq the original request made by the user
      * Save the order with the cheapest necessary items within the database to
      * a .text file.
      * This will invoke a method within FileIO to save the files.
      * Information is sent in as raw data.
-     * TODO: ensure data is sent in the correct order and format.
      *
+	 * @param origReq the original request made by the user
+     *
+     * @throws SQLException
+     * @throws Exception
      */
-    private void saveOrder(String origReq, String itemCategory){
+    private void saveOrder(String origReq, String itemCategory) throws SQLException, Exception{
         if(fileName == null){
             System.out.println("File name not specified.");
             System.exit(1);
@@ -73,17 +85,53 @@ public class Manager{
 	 */
 	public void setFileName(String fileName){
 	    this.fileName=fileName;
-	}
-	
-    
+    }
+
+
     /**
-	 * @param descript String adjective used to describe item, i.e. "mesh" or "executive"
-	 * @param item String noun that describes the item, i.e "chair" or "lamp"
 	 * Simple function that calls a database function to find a list of
 	 * manufacturers based on the desired item
+     *
+	 * @param descript String adjective used to describe item, i.e. "mesh" or "executive"
+	 * @param item String noun that describes the item, i.e "chair" or "lamp"
+     *
+     * @throws SQLException
+     * @throws Exception
 	 */
-	public String[] getManufacturersList(String descript, String item){
-		return this.databaseAccess.getManuIDs(item, descript);
+	public String[] getManufacturersList(String item) throws SQLException, Exception{
+		//return this.databaseAccess.getManuIDs(item, descript);
+		String temp[] = null;
+		String[][] temp1=null;
+		if(item.equals("Chair")){
+			String [] manufac=this.databaseAccess.getChairManufacturer();
+			temp= new String[manufac.length];
+			for(int i=0;i<manufac.length;i++){
+			temp1=this.databaseAccess.searchFor("Manufacturer", "ManuID",manufac[i]);
+			temp[i]=temp1[0][1];
+			}
+		}else if(item.equals("Desk")){
+			String [] manufac=this.databaseAccess.getDeskManufacturer();
+			temp= new String[manufac.length];
+			for(int i=0;i<manufac.length;i++){
+			temp1=this.databaseAccess.searchFor("Manufacturer", "ManuID",manufac[i]);
+			temp[i]=temp1[0][1];
+			}
+		}else if(item.equals("Lamp")){
+			String [] manufac=this.databaseAccess.getLampManufacturer();
+			temp= new String[manufac.length];
+			for(int i=0;i<manufac.length;i++){
+			temp1=this.databaseAccess.searchFor("Manufacturer", "ManuID",manufac[i]);
+			temp[i]=temp1[0][1];
+			}
+		}else if(item.equals("Filing")){
+			String [] manufac=this.databaseAccess.getFilingManufacturer();
+			temp= new String[manufac.length];
+			for(int i=0;i<manufac.length;i++){
+			temp1=this.databaseAccess.searchFor("Manufacturer", "ManuID",manufac[i]);
+			temp[i]=temp1[0][1];
+			}
+		}
+		return temp;
 	}
 
     /**
@@ -111,156 +159,181 @@ public class Manager{
      *  this method should be called twice.
      *
      * @return A String array containing all ordered parts for the request.
+     *
+     * @throws SQLException
+     * @throws Exception
      */
-    private String[] findCheapestItems(String itemType, String table){
-        // System.out.println("Looking for cheapest item");
-        // Get all relevant information
-        String [] fields = this.databaseAccess.getFields (table);
-        String [][] data = this.databaseAccess.filter (table, itemType, fields [2], "Y");
-
-        // System.out.println("Data size: " + data.length);
-
-        ArrayList<String> componentsGotten = new ArrayList<String>();
-        // componentsGotten.add(fields[2]);
-
-        // initialize string that will contain the number of components we need
-        ArrayList <String> ids = new ArrayList<String>();
-        // find the cheapest item from the current data
-        int z = 0;
-        while (true) {
-            int cheapest = 10000;
-            int index = -1;
-            for (int i = 0; i < data.length; i++) {
-                if (Integer.valueOf(data[i][data[i].length - 2]) < cheapest) {
-                    cheapest = Integer.valueOf(data[i][data[i].length - 2]);
-                    index = i;
-                }
+    private String[] findCheapestItems(String itemType, String itemCategory) throws SQLException, Exception{
+        String[] fieldNames = databaseAccess.getFields(itemCategory);
+        String[] partNames = isolateParts(fieldNames);
+        
+        // Create a saved count of extra parts a purchased item might have
+        // which would not contribute to the current item if it isn't already.
+        if(extraParts == null){
+            extraParts = new int[partNames.length];
+            for(int index = 0; index < partNames.length; index++){
+                extraParts[index] = 0;
             }
-            System.out.println("Cheapest price is: " + cheapest);
-            // have index of the cheapes item, now we must see whether it has more than 1 component
-            // Getting which components we have
-            String [] doNotHaveComponents = new String [fields.length - 4];
-            
-            int l = 0;
-            for (int i = 0; i < fields.length; i++) {
-                // System.out.println("Component Values: " + data [index][i]);
-                if (data [index][i].equals("Y")) {
-                    // System.out.println("Adding to Components Gotten");
-                    componentsGotten.add(fields[i]);
-                }
-                else if (!componentsGotten.contains(fields[i]) && data[index][i].equals("N")) {
-                    // System.out.println("Adding to not gotten");
-                    doNotHaveComponents [l] = fields [i];
-                    l ++;
-                } 
-                // System.out.println (!componentsGotten.contains(data[index][i]));
-            }
-            // System.out.println("Found Components: " + componentsGotten.size());
-            // System.out.println("Missing components: " + l);
-
-            
-
-            // update data to look for the missing components
-            if (l == 0) {
-                break;
-            } else {
-                data = this.databaseAccess.filter (table, itemType, doNotHaveComponents[0], "Y");
-            }
-
-            // Add the item to our ids to be added
-            ids.add(data[index][0]);
-            System.out.println("Added data id: " + data[index][0]);
-
-            // loop again until we have all the components to build an item
-            // z++;
-            // if (z > 3) {
-            //     break;
-            // }
         }
 
-        // make sure there are no duplicate ids and make sure it is not in ordered parts
-        // compare price per number of functioning parts and use that relative parts as a comparison
+        // Store, in an array which parts have been satisfied. (initialized false)
+        boolean hasPart[] = new boolean[partNames.length];
+        for(int index = 0; index < partNames.length; index++){
+            // if there are extra parts from before which can be used to build
+            // this next item, then we are good.
+            // Will default to "false" on first run.
+            hasPart[index] = extraParts[index] > 0;
+        }
+     
+        boolean foundCheapest = false;
+        String[] lowestIDs = new String[0];
+        String[][] lowestItems = new String[0][];
 
-        return ids.toArray(new String [ids.size()]);
+        // set some constants for readability
+        final String FLAG_HAS = "Y";
+        final String FLAG_NOT_HAS = "N";
+        final int START_PADDING = 2;
+        final int END_PADDING = 2;
+
+        final int COST_INDEX = fieldNames.length - 2;
+        final int ID_INDEX = 0;
+        final double MAX = 9999999;
+        while(!foundCheapest){
+
+            // Get all items that contain some number of the missing parts
+            String potentialItems[][] = new String[0][partNames.length+4];
+            for(int index = 0; index < partNames.length; index++){
+                if(hasPart[index]){
+                    continue;
+                }
+
+                // Get every item with each part
+                String partName = partNames[index];
+                String[][] rows = databaseAccess.filter(itemCategory, itemType, partName, FLAG_HAS);
+                if(rows.length == 0){
+                    return new String[0];
+                }
+                for(String[] row : rows){
+                    // Ignore the item if it's already been ordered
+                    if(orderedParts.size() > 0 && orderedParts.contains(row[ID_INDEX])){
+                        continue;
+                    }
+
+                    potentialItems = arrAppend(potentialItems, row);
+                }
+            }
+
+            // DEBUG
+            /*/
+            for(String[] item : potentialItems){
+                System.out.println(item[ID_INDEX]);
+            }//*/
+
+            // Find cheapest item per part
+            // ie. minimize price per part
+            double lowestCost = MAX;
+            String[] lowestItem = null;
+
+            for(int index = 0; index < potentialItems.length; index++){
+                int hasPartCount = 0;
+                String[] focusItem = potentialItems[index];
+
+                // minimize the average price across multiple parts an item has
+                // ie. most parts for the price
+                for(int j = START_PADDING; j < focusItem.length - END_PADDING; j++){
+                    if(focusItem[j].equals(FLAG_NOT_HAS) || extraParts[j-START_PADDING] > 0){
+                        continue;
+                    }
+
+                    hasPartCount++;
+                }
+                double totalCost = Double.parseDouble(focusItem[COST_INDEX]);
+                double costPerPart = totalCost / hasPartCount;
+
+                if(costPerPart > lowestCost){
+                    continue;
+                }
+
+                // DEBUG
+                // System.out.println(costPerPart + " " + focusItem[ID_INDEX] + " " + focusItem[COST_INDEX] + " " + hasPartCount);
+
+                lowestCost = costPerPart;
+                lowestItem = focusItem;
+            }
+
+            // by this point, all potential items have been checked and 
+            // the best value item has been found
+
+            // Nothing found, cannot continue.
+            if(lowestItem == null){
+                return new String[0];
+            }
+
+            // DEBUG
+            // System.out.println("Lowest item is: " + lowestItem[ID_INDEX]);
+
+            lowestItems = arrAppend(lowestItems, lowestItem);
+
+            // Check which parts still need to be found;
+            for(int i = START_PADDING; i < lowestItem.length - END_PADDING; i++){
+                boolean currentState = hasPart[i-START_PADDING];
+                boolean partFound = lowestItem[i].equals(FLAG_HAS);
+                hasPart[i-START_PADDING] = currentState || partFound;
+                // DEBUG
+                // System.out.println(item[ID_INDEX] + " " + i + " " + hasPart[i-START_PADDING]);
+            }
+
+            foundCheapest = true;
+            for(boolean partCheck : hasPart){
+                foundCheapest = foundCheapest && partCheck;
+            }
+        }
+
+        // Save all IDs, count the number of remaining parts on file.
+
+        // Add the total number of every part that would be ordered
+        for(int index = 0; index < lowestItems.length; index++){
+            String[] item = lowestItems[index];
+            lowestIDs = arrAppend(lowestIDs, item[ID_INDEX]);
+            String[] parts = isolateParts(item);
+
+            // Determine if there are extra parts left over from this combination
+            for(int j = 0; j < parts.length; j++){
+                String partAvailable = parts[j];
+                // System.out.println(partAvailable);
+                if(partAvailable.equals(FLAG_NOT_HAS)){
+                    continue;
+                }
+
+                extraParts[j]++;
+            }
+        }
+
+        // Remove one full item from the pile of parts.
+        for(int index = 0; index < extraParts.length; index++){
+            extraParts[index]--;
+            // DEBUG
+            // System.out.println("COUNT: " + index + " " + extraParts[index]);
+        }
+
+        /*/ DEBUG
+        for(String id: lowestIDs){
+            System.out.println(id);
+        }//*/
+
+        return lowestIDs;
     }
 
 
     /**
-     * Recusively finds the set of ids that make a full item, with the lowest
-     * overall price.
+     * Isolates every part name that builds up the item.
+     * As the first and last two items are consistently information about the
+     * item, they can be removed.
      *
-     * @param chosenIDs The backlog of chosen IDs to determine price
-     *  - Needs to be empty when initially called
-     * @param idPool The pool of ids to choose new ids from
-     *  - Needs to be empty when initially called
-     * @param missingParts All parts that the item is missing before
-     * it becomes a complete part.
-     *  - Needs to have the same number of parts that make up that item,
-     *    all filled with true.
-     * @param itemCategory the overall category that the item falls under.
-     *  - This should be one of the tables in the database.
+     * @param row The row with all fields from the database.
      *
-     * @return The set with the lowest price.
+     * @return An array containing all part names.
      */
-    private String[] minimizePrice(String[] chosenIDs, String[] idPool, boolean[] missingParts, String itemCategory){
-        // no need for additional parts? return with the previous ids.
-        boolean complete = true;
-        for(boolean partMissing : missingParts){
-            complete = complete && !partMissing;
-        }
-        if(complete){
-            return chosenIDs;
-        }
-        // still need things but nowhere to pull from? failed - return
-        if(idPool.length == 0){
-            return new String[0];
-        }
-
-        // Determine which parts still need to be searched for.
-        // hash map pls
-        boolean stillMissing[] = missingParts;
-        if(chosenIDs.length != 0){
-            stillMissing = new boolean[missingParts.length];
-            String id = chosenIDs[chosenIDs.length - 1];
-            String[] itemRow = databaseAccess.searchFor(itemCategory, "ID", id)[0];
-            String[] itemParts = isolateParts(itemRow);
-
-            for(int i = 0; i < missingParts.length; i++){
-                boolean hasPart = itemParts[i].equals("Y");
-                stillMissing[i] = !hasPart && missingParts[i];
-                // This is only true if the row does not have the part 
-                // and the part is still missing.
-            }
-        }
-
-        // Preparing first comparison item
-        String[] chosen1 = arrAppend(chosenIDs, idPool[0]);
-        String[] pool1 = arrRemove(idPool, 0);
-
-        String[] lowest = minimizePrice(chosen1, pool1, stillMissing, itemCategory);
-        if(lowest.length == 0){
-            return new String[0]; // This combination cannot be used
-        }
-
-        for(int index = 1; index < idPool.length; index++){
-            // Preparing next comparison items
-            String[] chosen2 = arrAppend(chosenIDs, idPool[index]);
-            String[] pool2 = arrRemove(idPool, index);
-            String[] comp2 = minimizePrice(chosen2, pool2, stillMissing, itemCategory);
-
-            if(comp2 == null){
-                continue; // This combination cannot be used
-            }
-
-            if(getPrice(lowest, itemCategory) < getPrice(comp2, itemCategory)){
-                lowest = comp2;
-            }
-        }
-
-        return lowest;
-    }
-
-
     private String[] isolateParts(String[] row){
         // Stuff to ignore exists at index 0, 1, row.length - 1 and row.length - 2
         // ie. remove first two things and last two things
@@ -275,6 +348,14 @@ public class Manager{
     }
 
 
+    /**
+     * Appends a String to the end of a given String array.
+     *
+     * @param original The String array to append to
+     * @param item The String to append
+     * 
+     * @return The String array with the item appended at the ended
+     */
     private String[] arrAppend(String[] original, String item){
         String[] returnedArray = new String[original.length+1];
         for(int index = 0; index < original.length; index++){
@@ -286,16 +367,79 @@ public class Manager{
     }
 
 
+    /**
+     * Appends a String array to the end of a given 2D String array.
+     *
+     * @param original The 2D String array to append to.
+     * @param item The String array to append.
+     *
+     * @return The 2D String array with the new String array appended to it.
+     */
+    private String[][] arrAppend(String[][] original, String item[]){
+        String[][] returnedArray = new String[original.length+1][item.length];
+        for(int index = 0; index < original.length; index++){
+            returnedArray[index] = original[index];
+        }
+
+        returnedArray[original.length] = item;
+        return returnedArray;
+    }
+
+
+    /**
+     * Removes a specific object at a specific index.
+     * Also makes the array one element smaller.
+     *
+     * @param original The String array to remove items from.
+     * @param ignoreIndex The index of the item that needs to be removed.
+     *
+     * @return A smaller string array without the item at the given index.
+     */
     private String[] arrRemove(String[] original, int ignoreIndex){
         return arrRemove(original, original[ignoreIndex]);
     }
 
 
+    /**
+     * Removes a specific object within a String array.
+     * Also makes the array one element smaller.
+     *
+     * @param original The String array to remove items from.
+     * @param ignoreIndex The item that needs to be removed.
+     *
+     * @return A smaller string array without the specified item.
+     */
     private String[] arrRemove(String[] original, String item){
         String[] returnedArray = new String[original.length-1];
 
         int index = 0;
         for(String origStr : original){
+            if(origStr.equals(item)){
+                continue;
+            }
+
+            returnedArray[index] = origStr;
+            index++;
+        }
+
+        return returnedArray;
+    }
+
+    
+    /**
+     * Removes a specific object within a String array.
+     * Also makes the array one element smaller.
+     *
+     * @param original The String array to remove items from.
+     * @param ignoreIndex The item that needs to be removed.
+     *
+     * @return A smaller string array without the specified item.
+     */
+    private String[][] arrRemove(String[][] original, String item[]){
+        String[][] returnedArray = new String[original.length-1][];
+
+        int index = 0;
+        for(String[] origStr : original){
             if(origStr.equals(item)){
                 continue;
             }
@@ -316,8 +460,11 @@ public class Manager{
      *  - This should be one of the tables in the Database.
      *
      * @return The combined cost of each specified part.
+     *
+     * @throws SQLException
+     * @throws Exception
      */
-    private double getPrice(String[] ids, String itemCategory){
+    private double getPrice(String[] ids, String itemCategory) throws SQLException, Exception{
         String[] fields = databaseAccess.getFields(itemCategory);
 
         // Ensure that the price field is handled
@@ -332,15 +479,34 @@ public class Manager{
 
         double totalCost = 0;
         for(String id : ids){
+            // DEBUG
+            // System.out.println("purchasing: " + id);
+
             // :/
-            String[] itemRow = databaseAccess.searchFor(itemCategory, "ID", id)[0];
+            String[][] itemRows = databaseAccess.searchFor(itemCategory, "ID", id);
+            String[] itemRow = itemRows[0];
             String priceStr = itemRow[priceIndex];
-            priceIndex += Double.parseDouble(priceStr);
+            totalCost += Double.parseDouble(priceStr);
         }
 
         return totalCost;
 
     }
+
+
+    /**
+	@param adjective String parameter is used to describe object
+	@param noun String parameter that describes the object
+	@return boolean returns whether such a furniture piece exists within the data based
+	simple function for determining whether a furniture piece exists in the data based
+	*/
+	public boolean verify(String adjective, String noun) throws SQLException, Exception{
+		String [][] temp=this.databaseAccess.searchFor(noun,"Type",adjective);
+		if(temp[0]!=null){
+			return true;
+		}
+		return false;
+	}
 
 
     /**
@@ -351,8 +517,11 @@ public class Manager{
      * @return -1.00 if the item does not exist,
      *         -2.00 if the item exists but cannot be made,
      *         the price otherwise.
+     *
+     * @throws SQLException
+     * @throws Exception
      */
-    public double parseOrder(String itemType, String itemCategory, int quantity){
+    public double parseOrder(String itemType, String itemCategory, int quantity) throws SQLException, Exception{
         // Check if the inputs are valid.
         if(itemType == null || itemCategory == null || quantity == 0){
             System.out.println("Invalid request.");
@@ -384,8 +553,11 @@ public class Manager{
      * A purchased item has no need to be in the database anymore.
      *
      * @param itemCategory The category of the item
+     *
+     * @throws SQLException
+     * @throws Exception
      */
-    private void purchaseItems(String itemCategory){
+    private void purchaseItems(String itemCategory) throws SQLException, Exception{
         for(String id : orderedParts){
             databaseAccess.removeFurniture(itemCategory, id);
         }
@@ -396,9 +568,12 @@ public class Manager{
      * Confirms the order if the user wishes to.
      * This will remove all bought instances within the database.
      * This will also reset the manager once the file is written.
+     *
+     * @throws SQLException
+     * @throws Exception
      */
 
-    public void confirmOrder(String origReq){
+    public void confirmOrder(String origReq) throws SQLException, Exception{
         String[] requestParts = origReq.split(" ");
         // String itemType = requestParts[0];
         String itemCategory = requestParts[1];
