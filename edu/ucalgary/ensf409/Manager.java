@@ -184,8 +184,6 @@ public class Manager{
                 }
                 String partName = partNames[index];
                 String[][] rows = databaseAccess.filter(itemCategory, itemType, partName, FLAG_HAS);
-                // DEBUG
-                System.out.println("l: " + rows.length);
                 if(rows.length == 0){
                     return new String[0];
                 }
@@ -200,9 +198,10 @@ public class Manager{
             }
 
             // DEBUG
+            /*/
             for(String[] item : potentialItems){
                 System.out.println(item[ID_INDEX]);
-            }
+            }//*/
 
             // Find cheapest item per part
             // ie. minimize price per part
@@ -237,6 +236,8 @@ public class Manager{
                 return new String[0];
             }
 
+            // DEBUG
+            System.out.println("Lowest item is: " + lowestItem[ID_INDEX]);
 
             // lowestIDs = arrAppend(lowestIDs, lowestItem[ID_INDEX]);
             lowestItems = arrAppend(lowestItems, lowestItem);
@@ -250,7 +251,7 @@ public class Manager{
                     boolean partFound = item[i].equals(FLAG_HAS);
                     hasPart[i-START_PADDING] = currentState || partFound;
                     // DEBUG
-                    System.out.println(item[ID_INDEX] + " " + i + " " + hasPart[i-START_PADDING]);
+                    // System.out.println(item[ID_INDEX] + " " + i + " " + hasPart[i-START_PADDING]);
                 }
             }
 
@@ -283,7 +284,7 @@ public class Manager{
         for(int index = 0; index < extraParts.length; index++){
             extraParts[index]--;
             // DEBUG
-            System.out.println(index + " " + extraParts[index]);
+            System.out.println("COUNT: " + index + " " + extraParts[index]);
         }
 
         // DEBUG
@@ -449,11 +450,11 @@ public class Manager{
 
         double totalCost = 0;
         for(String id : ids){
+            // DEBUG
+            System.out.println("purchasing: " + id);
+
             // :/
             String[][] itemRows = databaseAccess.searchFor(itemCategory, "ID", id);
-            if(itemRows.length == 0){
-                System.out.println("???????? " + id);
-            }
             String[] itemRow = itemRows[0];
             String priceStr = itemRow[priceIndex];
             totalCost += Double.parseDouble(priceStr);
