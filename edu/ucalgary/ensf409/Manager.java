@@ -166,6 +166,7 @@ public class Manager{
         String[] lowestIDs = new String[0];
         String[][] lowestItems = new String[0][];
 
+        // set some constants for readability
         final String FLAG_HAS = "Y";
         final String FLAG_NOT_HAS = "N";
         final int START_PADDING = 2;
@@ -182,16 +183,18 @@ public class Manager{
                 if(hasPart[index]){
                     continue;
                 }
+
+                // Get every item with each part
                 String partName = partNames[index];
                 String[][] rows = databaseAccess.filter(itemCategory, itemType, partName, FLAG_HAS);
                 if(rows.length == 0){
                     return new String[0];
                 }
                 for(String[] row : rows){
-                    //
+                    // Ignore the item if it's already been ordered
                     if(orderedParts.size() > 0 && orderedParts.contains(row[ID_INDEX])){
                         continue;
-                    }//*/
+                    }
 
                     potentialItems = arrAppend(potentialItems, row);
                 }
@@ -207,9 +210,13 @@ public class Manager{
             // ie. minimize price per part
             double lowestCost = MAX;
             String[] lowestItem = null;
+
             for(int index = 0; index < potentialItems.length; index++){
                 int hasPartCount = 0;
                 String[] focusItem = potentialItems[index];
+
+                // minimize the average price across multiple parts an item has
+                // ie. most parts for the price
                 for(int j = START_PADDING; j < focusItem.length - END_PADDING; j++){
                     if(focusItem[j].equals(FLAG_NOT_HAS) || extraParts[j-START_PADDING] > 0){
                         continue;
@@ -231,6 +238,9 @@ public class Manager{
                 lowestItem = focusItem;
             }
 
+            // by this point, all potential items have been checked and 
+            // the best value item has been found
+
             // Nothing found, cannot continue.
             if(lowestItem == null){
                 return new String[0];
@@ -239,20 +249,15 @@ public class Manager{
             // DEBUG
             // System.out.println("Lowest item is: " + lowestItem[ID_INDEX]);
 
-            // lowestIDs = arrAppend(lowestIDs, lowestItem[ID_INDEX]);
             lowestItems = arrAppend(lowestItems, lowestItem);
-            // potentialItems = arrRemove(potentialItems, lowestItem);
 
             // Check which parts still need to be found;
-            for(String[] item : lowestItems){
-                for(int i = START_PADDING; i < lowestItem.length - END_PADDING; i++){
-                    boolean currentState = hasPart[i-START_PADDING];
-                    boolean partFound = lowestItem[i].equals(FLAG_HAS);
-                    // boolean partFound = item[i].equals(FLAG_HAS);
-                    hasPart[i-START_PADDING] = currentState || partFound;
-                    // DEBUG
-                    // System.out.println(item[ID_INDEX] + " " + i + " " + hasPart[i-START_PADDING]);
-                }
+            for(int i = START_PADDING; i < lowestItem.length - END_PADDING; i++){
+                boolean currentState = hasPart[i-START_PADDING];
+                boolean partFound = lowestItem[i].equals(FLAG_HAS);
+                hasPart[i-START_PADDING] = currentState || partFound;
+                // DEBUG
+                // System.out.println(item[ID_INDEX] + " " + i + " " + hasPart[i-START_PADDING]);
             }
 
             foundCheapest = true;
@@ -269,6 +274,7 @@ public class Manager{
             lowestIDs = arrAppend(lowestIDs, item[ID_INDEX]);
             String[] parts = isolateParts(item);
 
+            // Determine if there are extra parts left over from this combination
             for(int j = 0; j < parts.length; j++){
                 String partAvailable = parts[j];
                 // System.out.println(partAvailable);
