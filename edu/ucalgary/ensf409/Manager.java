@@ -98,15 +98,38 @@ public class Manager{
      * @throws SQLException
      * @throws Exception
 	 */
-	public String[] getManufacturersList(String descript, String item) throws SQLException, Exception{
+	public String[] getManufacturersList(String item) throws SQLException, Exception{
 		//return this.databaseAccess.getManuIDs(item, descript);
-		String temp[] = this.databaseAccess.getManuIDs(item, descript);
-		String arrtemp[][][]= new String[temp.length][][];
-		for(int i=0; i<temp.length;i++){
-		arrtemp[i]=this.databaseAccess.searchFor("MANUFACTURER", "ManuID", temp[i]);
-		}
-		for(int i=0; i<temp.length;i++){
-			temp[i]=arrtemp[i][0][1];
+		String temp[] = null;
+		String[][] temp1=null;
+		if(item.equals("Chair")){
+			String [] manufac=this.databaseAccess.getChairManufacturer();
+			temp= new String[manufac.length];
+			for(int i=0;i<manufac.length;i++){
+			temp1=this.databaseAccess.searchFor("Manufacturer", "ManuID",manufac[i]);
+			temp[i]=temp1[0][1];
+			}
+		}else if(item.equals("Desk")){
+			String [] manufac=this.databaseAccess.getDeskManufacturer();
+			temp= new String[manufac.length];
+			for(int i=0;i<manufac.length;i++){
+			temp1=this.databaseAccess.searchFor("Manufacturer", "ManuID",manufac[i]);
+			temp[i]=temp1[0][1];
+			}
+		}else if(item.equals("Lamp")){
+			String [] manufac=this.databaseAccess.getLampManufacturer();
+			temp= new String[manufac.length];
+			for(int i=0;i<manufac.length;i++){
+			temp1=this.databaseAccess.searchFor("Manufacturer", "ManuID",manufac[i]);
+			temp[i]=temp1[0][1];
+			}
+		}else if(item.equals("Filing")){
+			String [] manufac=this.databaseAccess.getFilingManufacturer();
+			temp= new String[manufac.length];
+			for(int i=0;i<manufac.length;i++){
+			temp1=this.databaseAccess.searchFor("Manufacturer", "ManuID",manufac[i]);
+			temp[i]=temp1[0][1];
+			}
 		}
 		return temp;
 	}
@@ -254,7 +277,7 @@ public class Manager{
 
             for(int j = 0; j < parts.length; j++){
                 String partAvailable = parts[j];
-                System.out.println(partAvailable);
+                //System.out.println(partAvailable);
                 if(partAvailable.equals(FLAG_NOT_HAS)){
                     continue;
                 }
@@ -267,13 +290,13 @@ public class Manager{
         for(int index = 0; index < extraParts.length; index++){
             extraParts[index]--;
             // DEBUG
-            System.out.println(index + " " + extraParts[index]);
+           // System.out.println(index + " " + extraParts[index]);
         }
 
         // DEBUG
-        for(String id: lowestIDs){
-            System.out.println(id);
-        }//*/
+       // for(String id: lowestIDs){
+          //  System.out.println(id);
+    //    }//*/
 
         return lowestIDs;
     }
@@ -416,6 +439,19 @@ public class Manager{
         return totalCost;
 
     }
+	/**
+	@param adjective String parameter is used to describe object
+	@param noun String parameter that describes the object
+	@return boolean returns whether such a furniture piece exists within the data based
+	simple function for determining whether a furniture piece exists in the data based
+	*/
+	public boolean verify(String adjective, String noun) throws SQLException, Exception{
+		String [][] temp=this.databaseAccess.searchFor(noun,"Type",adjective);
+		if(temp[0]!=null){
+			return true;
+		}
+		return false;
+	}
 
 
     /**
