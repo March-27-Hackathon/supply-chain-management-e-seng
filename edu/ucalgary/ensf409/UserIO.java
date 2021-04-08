@@ -173,7 +173,7 @@ import java.io.*;
 	 and does not update the database otherwise it will continue asking the user
 	 */
 	 private void confirm(double value){
-		 System.out.println("Cheapest price found was: " + value);
+		 System.out.println("Cheapest price found was: $" + value);
 		 while(true){
 		 System.out.println("Confirm order?: (y/n)");
 		 String response=System.console().readLine();
