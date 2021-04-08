@@ -20,6 +20,10 @@ import java.time.format.DateTimeFormatter;
 Test class for FileIO.java
 */
 public class FileIOTest {
+	
+	private String file1="";
+	private String file2="";
+	private String file3="";
     @Test
 	/**
 	Basic functionality test of FileIO constructor and write(),
@@ -29,11 +33,12 @@ public class FileIOTest {
 	*/
     public void testConstructorAndWrite () throws IOException {
         FileIO test = new FileIO ("L093");
-        String [] arr = {"C9890", "C0942"};
-        test.write(arr, "mesh chair, 1", 150);
 		LocalDateTime orderTime=LocalDateTime.now();
 		DateTimeFormatter properTime = DateTimeFormatter.ofPattern("ddMMyyyy-HHmmss");
 		String output="orderL093"+orderTime.format(properTime)+".txt";
+		this.file1=output;
+        String [] arr = {"C9890", "C0942"};
+        test.write(arr, "mesh chair, 1", 150);
         File orig = new File("orderform.text");
         File written = new File(output);
         boolean match = true;
@@ -65,6 +70,7 @@ public class FileIOTest {
 		LocalDateTime orderTime=LocalDateTime.now();
 		DateTimeFormatter properTime = DateTimeFormatter.ofPattern("ddMMyyyy-HHmmss");
 		String out="order"+orderTime.format(properTime)+".txt";
+		this.file2=out;
 		File temst = new File(out);
 		assertTrue("File not created", temst.exists());
 	}
@@ -84,10 +90,14 @@ public class FileIOTest {
 	*/
 	public void TestNullWrite(){
 		FileIO test = new FileIO("dl2");
+		LocalDateTime orderTime=LocalDateTime.now();
+		DateTimeFormatter properTime = DateTimeFormatter.ofPattern("ddMMyyyy-HHmmss");
+		String out="orderDL2"+orderTime.format(properTime)+".txt";
+		this.file3=out;
 		String [] arr = new String[2];
-		assertThrows(NullPointerException.class,()->{
 		test.write(arr,null,0.0);
-		});
+		File check = new File(out);
+		assertTrue("File not properly created", check.exists());
 	}
 	
 	@Test
@@ -99,4 +109,19 @@ public class FileIOTest {
 		assertTrue("Constructor failed", test!=null);
 	}
 	
+	@After
+	public void Destruct(){
+		File out1= new File(this.file1);
+		File out2= new File(this.file2);
+		File out3= new File(this.file3);
+		if(out1.exists()){
+			out1.delete();
+		}
+		if(out2.exists()){
+			out2.delete();
+		}
+		if(out3.exists()){
+			out3.delete();
+		}
+	}
 }
