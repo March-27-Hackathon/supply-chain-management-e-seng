@@ -159,7 +159,7 @@ public class ManagerTest{
 		Manager film= new Manager(USERNAME, PASSWORD, URL);
 		film.parseOrder("Mesh", "Chair", 1);
 		film.reset();
-		assertTrue("Reset did not correctly reset", getOrderParts().size()==0);
+		assertTrue("Reset did not correctly reset", film.getOrderedParts().size()==0);
 		}catch(Exception sql){
 			System.err.println("unexpected error");
 		}
