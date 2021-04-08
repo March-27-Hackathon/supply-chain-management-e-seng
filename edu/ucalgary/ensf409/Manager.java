@@ -256,7 +256,7 @@ public class Manager{
                 // ie. most parts for the price
                 for(int j = START_PADDING; j < focusItem.length - END_PADDING; j++){
                     // DEBUG
-                    System.out.println("Conditions: " + focusItem[ID_INDEX] + ": " + focusItem[j] + " " + extraParts[j-START_PADDING]);
+                    // System.out.println("Conditions: " + focusItem[ID_INDEX] + ": " + focusItem[j] + " " + extraParts[j-START_PADDING]);
                     if(focusItem[j].equals(FLAG_NOT_HAS) || extraParts[j-START_PADDING] > 0){
                         continue;
                     }
@@ -271,7 +271,7 @@ public class Manager{
                 }
 
                 // DEBUG
-                System.out.println(costPerPart + " " + focusItem[ID_INDEX] + " " + focusItem[COST_INDEX] + " " + hasPartCount);
+                // System.out.println(costPerPart + " " + focusItem[ID_INDEX] + " " + focusItem[COST_INDEX] + " " + hasPartCount);
 
                 lowestCost = costPerPart;
                 lowestItem = focusItem;
@@ -345,10 +345,11 @@ public class Manager{
         for(int index = 0; index < extraParts.length; index++){
             extraParts[index]--;
             // DEBUG
-            System.out.println("COUNT: " + index + " " + extraParts[index]);
+            // System.out.println("COUNT: " + index + " " + extraParts[index]);
         }
 
         // DEBUG
+        /*/
         for(String id: lowestIDs){
             System.out.println("LOWEST IDs: " + id);
         }//*/
