@@ -36,11 +36,8 @@ confirm the piece at the desired price, if yes an order form is created if no th
 if the user enters a valid furniture type but the program cannot assemble the pieces to make a whole then the program outputs in the terminal
 possible manufacturers to buy from and quits. 
 
-### SQLAccess Class
-The SQLAccess class should not need to be accesed by users. 
-It's purpose is solely to retrieve infomration from the data base.
-
-### TESTING:
+## TESTING:
+### SQLAccess
 - Before running the tests, modify the USERNAME, PASSWORD, and DBURL variables to ensure that it connects to the right data base.
 - The provided inventory.sql file should be uploaded before each run.
 - Values in tests are hard coded to match the provided data base, though the class itself is very flexible.
