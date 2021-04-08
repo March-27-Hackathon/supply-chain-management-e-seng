@@ -35,10 +35,12 @@ public class ManagerTest{
 	*/
 	public void TestConstructorLessBasic(){
 		try{
-		exit.expectSystemExitWithStatus(1);
-		Manager film = new Manager("amit","ensf409","jdbc:mysql://localhost/INVENTORY");
+	//	exit.expectSystemExitWithStatus(1);
+		assertThrows(SQLException.class, ()->{
+			Manager film = new Manager("amit","ensf409","jdbc:mysql://localhost/INVENTORY");
+		});
 		}catch(Exception Ex){
-			System.err.println("Unexpected error");
+			System.out.println("Unknown Exception");
 		}
 	}
 	@Test
@@ -73,8 +75,9 @@ public class ManagerTest{
 	public void TestParseOrder2(){
 		try{
 		Manager Dan = new Manager("amir", "ensf409", "jdbc:mysql://localhost/INVENTORY");
-		double down=Dan.parseOrder("mesh","air",1);
-		assertTrue("expected -2", down==-2);
+		assertThrows(SQLException.class, ()->{
+			double down=Dan.parseOrder("mesh","air",1);
+		});
 		}catch(Exception te){
 			System.err.println("Unexpected error");
 		}
@@ -87,7 +90,7 @@ public class ManagerTest{
 		try{
 		Manager Dan = new Manager("amir", "ensf409", "jdbc:mysql://localhost/INVENTORY");
 		double down=Dan.parseOrder("mesh","chair",200);
-		assertTrue("expected -1", down==-1);
+		assertTrue("parseOrder returned wrong value"+down, down==-2);
 		}catch(Exception rpe){
 			System.err.println("Unexpected error");
 		}
