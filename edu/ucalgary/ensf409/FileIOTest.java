@@ -54,10 +54,9 @@ public class FileIOTest {
     }
 	@Test
 	/**
-	Testing for Null inputs to FileIO, FileIO should still create the file and write to it,
-	it'll be blank however
+	Testing for empty file name inputs to FileIO, FileIO should still create the file and write to it
 	*/
-	public void TestNullFile(){
+	public void TestEmptyFileName(){
 		FileIO test = new FileIO("");
 		String [] arr= new String[2];
 		arr[0]="Hello";
@@ -69,30 +68,35 @@ public class FileIOTest {
 		File temst = new File(out);
 		assertTrue("File not created", temst.exists());
 	}
+	
+	@Test
+	/**
+	Simple test to check FileIO's response to null input
+	*/
+	public void TestNullFileName(){
+		assertThrows(NullPointerException.class,()->{
+		FileIO test=new FileIO(null);
+		});
+	}
+	@Test
+	/**
+	Simple test to check write() response to null String
+	*/
+	public void TestNullWrite(){
+		FileIO test = new FileIO("dl2");
+		String [] arr = new String[2];
+		assertThrows(NullPointerException.class,()->{
+		test.write(arr,null,0.0);
+		});
+	}
+	
 	@Test
 	/**
 	Basic test for simply checking if FileIO's constructor does not create a null object
 	*/
-	public void NullConstructor(){
+	public void TestNullConstructor(){
 		FileIO test = new FileIO("EN22");
 		assertTrue("Constructor failed", test!=null);
 	}
-//	@After
-//	public void Afterwards(){
-//	File first= new File("order.txt");
-//		File second = new File("orderL093(1).txt");
-//		File third = new File("orderL093.txt");
-//		if(first.exists()){
-//		first.delete();
-//		}
-//		if(second.exists()){
-//			second.delete();
-//		}
-//		if(third.exists()){
-//			third.delete();
-//		}
-//	}
-	
-	
 	
 }
