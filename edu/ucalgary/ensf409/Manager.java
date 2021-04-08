@@ -485,6 +485,7 @@ public class Manager{
 
     /**
      * Parses the desired order request from user input.
+     * Also prints to the terminal which items will be ordered.
      *
      * @param order The order that the user is trying to make
      *
@@ -518,7 +519,14 @@ public class Manager{
             quantity--;
         }
 
-        return getPrice(orderedParts.toArray(new String[orderedParts.size()]), itemCategory);
+        String finalParts[] = orderedParts.toArray(new String[orderedParts.size()]);
+
+        System.out.println("About to purcahse:");
+        for(String id : finalParts){
+            System.out.println("  - " + id);
+        }
+
+        return getPrice(finalParts, itemCategory);
     }
 
 
