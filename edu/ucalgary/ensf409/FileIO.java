@@ -28,7 +28,7 @@ public class FileIO{ // Start of FileIO class
 		String temp = "order";
 		temp+=order.toUpperCase();
 		temp+=orderTime.format(properTime);
-		System.out.println(temp);
+		System.out.println("Order will be saved as: " + temp);
 		temp+=".txt";
 		File check= new File(temp);
 		this.FILENAME=new String(temp);
