@@ -43,6 +43,14 @@ public class Manager{
 
 
     /**
+     * Getters
+     */
+    public ArrayList<String> getOrderedParts(){
+        return this.orderedParts();
+    }
+
+
+    /**
      * Resets the Manager instance, removing previous history.
      */
     public void reset() throws SQLException, Exception{
