@@ -521,7 +521,7 @@ public class Manager{
 
         String finalParts[] = orderedParts.toArray(new String[orderedParts.size()]);
 
-        System.out.println("About to purcahse:");
+        System.out.println("About to purchase:");
         for(String id : finalParts){
             System.out.println("  - " + id);
         }
