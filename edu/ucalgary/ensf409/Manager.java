@@ -425,32 +425,6 @@ public class Manager{
         return returnedArray;
     }
 
-    
-    /**
-     * Removes a specific object within a String array.
-     * Also makes the array one element smaller.
-     *
-     * @param original The String array to remove items from.
-     * @param ignoreIndex The item that needs to be removed.
-     *
-     * @return A smaller string array without the specified item.
-     */
-    private String[][] arrRemove(String[][] original, String item[]){
-        String[][] returnedArray = new String[original.length-1][];
-
-        int index = 0;
-        for(String[] origStr : original){
-            if(origStr.equals(item)){
-                continue;
-            }
-
-            returnedArray[index] = origStr;
-            index++;
-        }
-
-        return returnedArray;
-    }
-
 
     /**
      * Gets the total cost of all items within the given array of IDs.
