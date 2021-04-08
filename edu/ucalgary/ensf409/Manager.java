@@ -299,6 +299,8 @@ public class Manager{
                 // System.out.println(item[ID_INDEX] + " " + i + " " + hasPart[i-START_PADDING]);
             }
 
+            // If there is only up to one order remaining, try to minimize the
+            // number of extra parts.
             if(orderCount <= 1){
                 String[] parts = isolateParts(lowestItem);
                 // Determine if there are extra parts left over from this combination
@@ -328,7 +330,7 @@ public class Manager{
             String[] parts = isolateParts(item);
 
             // Determine if there are extra parts left over from this combination
-            //
+            // This will ensure the next item does not reorder extra parts
             for(int j = 0; j < parts.length; j++){
                 String partAvailable = parts[j];
                 // DEBUG
