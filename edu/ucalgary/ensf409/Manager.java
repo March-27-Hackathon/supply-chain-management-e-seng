@@ -558,7 +558,7 @@ public class Manager{
     public void confirmOrder(String origReq) throws SQLException, Exception{
         String[] requestParts = origReq.split(" ");
         // String itemType = requestParts[0];
-        String itemCategory = requestParts[1];
+        String itemCategory = requestParts[1].substring(0, requestParts[1].length()-1);
         // String count = requestParts[2];
 
         saveOrder(origReq, itemCategory);
