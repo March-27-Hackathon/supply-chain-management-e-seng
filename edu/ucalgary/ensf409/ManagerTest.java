@@ -30,12 +30,12 @@ public class ManagerTest{
 		Manager film= new Manager(USERNAME, PASSWORD, URL);
 		assertTrue("Constructor did not create instance correctly", film!=null);
 		}catch(Exception sql){
-			System.err.println("unexpected error");
+			fail("unexpected error");
 		}
 	}
 	@Test
 	/**
-	Less basic test to check if Manager's constructor calls exit(1) from incorrect credentials
+	Less basic test to check if Manager's constructor throws an SQLException from incorrect credentials
 	*/
 	public void TestConstructorLessBasic(){
 		try{
@@ -45,7 +45,7 @@ public class ManagerTest{
 		});
 		}catch(Exception Ex){
 			System.out.println("Unknown Exception");
-            fail("Unwanted exception thrown");
+      fail("Unwanted exception thrown");
 		}
 	}
 	@Test
@@ -55,10 +55,11 @@ public class ManagerTest{
 	public void TestParseOrderBasic(){
 		try{
 		Manager Dan=new Manager(USERNAME, PASSWORD, URL);
-		assertTrue("parseOrder returned incorrect value", Dan.parseOrder("mesh","chair", 1)==150);
+		double down =Dan.parseOrder("mesh","chair", 1);
+		assertTrue("parseOrder returned incorrect value", down==150.0);
 		}catch(Exception we){
 			System.err.println("Unexpected error");
-            fail("Unwanted exception thrown");
+      fail("Unwanted exception thrown");
 		}
 	}
 	@Test 
@@ -86,7 +87,7 @@ public class ManagerTest{
 			double down=Dan.parseOrder("mesh","air",1);
 		});
 		}catch(Exception te){
-			System.err.println("Unexpected error");
+			fail("Unexpected error");
 		}
 	}
 	@Test
@@ -99,7 +100,7 @@ public class ManagerTest{
 		double down=Dan.parseOrder("mesh","chair",200);
 		assertTrue("parseOrder returned wrong value"+down, down==-2);
 		}catch(Exception rpe){
-			System.err.println("Unexpected error");
+			fail("Unexpected error");
 		}
 	}
     @Test
@@ -174,7 +175,7 @@ public class ManagerTest{
 		String [] result = film.getManufacturersList("Man");
 		assertTrue("getManufacturersList did not return null when expected", result==null);
 		}catch(Exception sql){
-			System.err.println("unexpected error");
+			fail("unexpected error");
 		}
 	}
 	@Test
@@ -188,7 +189,7 @@ public class ManagerTest{
 		film.reset();
 		assertTrue("Reset did not correctly reset", film.getOrderedParts().size()==0);
 		}catch(Exception sql){
-			System.err.println("unexpected error");
+			fail("unexpected error");
 		}
 	}
 	
@@ -202,7 +203,7 @@ public class ManagerTest{
 		boolean check =film.verify("Mesh", "Chair");
 		assertTrue("Verify failed to confirm the legitmacy of the input", check);
 		}catch(Exception sql){
-			System.err.println("unexpected error");
+			fail("unexpected error");
 		}
 	}
 	
@@ -217,7 +218,7 @@ public class ManagerTest{
 		film.verify("Meh", "Chair");
 		});
 		}catch(Exception sql){
-			System.err.println("unexpected error");
+			fail("unexpected error");
 		}
 	}
 	@Test
@@ -231,7 +232,7 @@ public class ManagerTest{
 		film.verify("Mesh", "Cair");
 		});
 		}catch(Exception sql){
-			System.err.println("unexpected error");
+			fail("unexpected error");
 		}
 	}
 	@Test
@@ -245,7 +246,7 @@ public class ManagerTest{
 		film.verify("pepsi", "man");
 		});
 		}catch(Exception sql){
-			System.err.println("unexpected error");
+			fail("unexpected error");
 		}
 	}
 	

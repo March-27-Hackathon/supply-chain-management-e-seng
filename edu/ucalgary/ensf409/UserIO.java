@@ -18,7 +18,7 @@ import java.io.*;
 	
 	/**
 	Default Constructor, propmts the user for the data base credentials first and foremost
-	if those are invalid, the program ends, else it begins asking the user for their desired
+	if those are invalid, the program asks again, else it begins asking the user for their desired
 	furniture order, if the user inputs invalid furniture types or negative quantites the program
 	will ask the user again for that data until it is able to proceed with it
 	calls both initalizeManage() and confirm()
@@ -36,11 +36,24 @@ import java.io.*;
 		 this.request = System.console().readLine();
 		  this.request=this.request.trim();
 		 if(this.request.equalsIgnoreCase("Q")){
-			 System.exit(1);
+			 System.exit(0);
 		 }
-		String [] items=this.request.split(" ");
+			String [] items=this.request.split(" ");
+			if(items.length>2){
+				String [] temp=new String[2];
+				String adjec=new String(items[0]);
+				adjec+=" ";
+				temp[1]=new String(items[items.length-1]);
+				for(int i=1; i<items.length-1;i++){
+					adjec+=new String(items[i]);
+					adjec+=" ";
+				}
+				adjec=adjec.trim();
+				temp[0]=new String(adjec);
+				items=temp;
+			}
 		try{
-			if(items.length>2||items.length<=1){
+			if(items.length<=1){
 				throw new IllegalArgumentException();
 			}
 			if(items[0]==null||items[1]==null){
