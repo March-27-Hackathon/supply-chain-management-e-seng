@@ -59,7 +59,11 @@ public class Manager{
         }
 
         databaseAccess = new SQLAccess(dbUsername, dbPassword, dbUrl);
-        orderedParts = new ArrayList<String>();
+        // Clear previous order if any
+        if(orderedParts == null){
+            orderedParts = new ArrayList<String>();
+        }
+        orderedParts.clear();
         extraParts = null;
         totalPrice = 0;
     }
