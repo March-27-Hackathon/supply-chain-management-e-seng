@@ -43,6 +43,14 @@ public class Manager{
 
 
     /**
+     * Getters
+     */
+    public ArrayList<String> getOrderedParts(){
+        return this.orderedParts();
+    }
+
+
+    /**
      * Resets the Manager instance, removing previous history.
      */
     public void reset() throws SQLException, Exception{
@@ -425,32 +433,6 @@ public class Manager{
         return returnedArray;
     }
 
-    
-    /**
-     * Removes a specific object within a String array.
-     * Also makes the array one element smaller.
-     *
-     * @param original The String array to remove items from.
-     * @param ignoreIndex The item that needs to be removed.
-     *
-     * @return A smaller string array without the specified item.
-     */
-    private String[][] arrRemove(String[][] original, String item[]){
-        String[][] returnedArray = new String[original.length-1][];
-
-        int index = 0;
-        for(String[] origStr : original){
-            if(origStr.equals(item)){
-                continue;
-            }
-
-            returnedArray[index] = origStr;
-            index++;
-        }
-
-        return returnedArray;
-    }
-
 
     /**
      * Gets the total cost of all items within the given array of IDs.
@@ -511,6 +493,7 @@ public class Manager{
 
     /**
      * Parses the desired order request from user input.
+     * Also prints to the terminal which items will be ordered.
      *
      * @param order The order that the user is trying to make
      *
@@ -544,7 +527,14 @@ public class Manager{
             quantity--;
         }
 
-        return getPrice(orderedParts.toArray(new String[orderedParts.size()]), itemCategory);
+        String finalParts[] = orderedParts.toArray(new String[orderedParts.size()]);
+
+        System.out.println("About to purchase:");
+        for(String id : finalParts){
+            System.out.println("  - " + id);
+        }
+
+        return getPrice(finalParts, itemCategory);
     }
 
 
@@ -576,7 +566,7 @@ public class Manager{
     public void confirmOrder(String origReq) throws SQLException, Exception{
         String[] requestParts = origReq.split(" ");
         // String itemType = requestParts[0];
-        String itemCategory = requestParts[1];
+        String itemCategory = requestParts[1].substring(0, requestParts[1].length()-1);
         // String count = requestParts[2];
 
         saveOrder(origReq, itemCategory);
