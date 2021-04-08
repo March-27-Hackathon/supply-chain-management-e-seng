@@ -99,6 +99,23 @@ public class ManagerTest{
 			System.err.println("Unexpected error");
 		}
 	}
+    @Test
+    /**
+     * Test checking slightly more complicated order combinations.
+     * This will check if two traditional desks can be ordered, where the
+     * cheapest combination will be $200 and 3 parts will be ordered.
+     */
+    public void TestComplexOrder(){
+        try{
+            Manager Dan = new Manager(USERNAME, PASSWORD, URL);
+            double price = Dan.parseOrder("traditional", "desk", 2);
+            int itemCount = Dan.getOrderedParts().size();
+            assertTrue("Complex orders not handled properly", price==200 && itemCount == 3);
+        }catch(Exception e){
+            System.out.println("Unwanted unexpected error");
+            e.printStackTrace();
+        }
+    }
 	@Test
 	/**
 	Test to check functionality of getManufacturersList()
