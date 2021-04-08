@@ -99,6 +99,22 @@ public class ManagerTest{
 			System.err.println("Unexpected error");
 		}
 	}
+    @Test
+    /**
+     * Test checking slightly more complicated order combinations.
+     * This will check if two traditional desks can be ordered, where the
+     * cheapest combination will be $200 and 3 parts will be ordered.
+     */
+    public void TestComplexOrder(){
+        try{
+            Manager Dan = new Manager(USERNAME, PASSWORD, URL);
+            double price = Dan.parseOrder("traditional", "desk", 2);
+            int itemCount = Dan.getOrderedParts().size();
+            assertTrue("Complex orders not handled properly", price==200 && itemCount == 3);
+        }catch(Exception e){
+            System.out.println("Unwanted unexpected error");
+        }
+    }
 	@Test
 	/**
 	Test to check functionality of getManufacturersList()
@@ -109,10 +125,12 @@ public class ManagerTest{
 		String [] result = film.getManufacturersList("Chair");
 		String [] expected={"Office Furnishings", "Chairs R Us", "Furniture Goods", "Fine Office Supplies"};
 		boolean match = true;
-		for(int i=0; i<expected.length;i++){
-			if(!result[i].equals(expected[i])){
-				match=false;
+		for(String exp : expected){
+            boolean tempMatch = false;
+            for(String manufacture : result){
+			    tempMatch = tempMatch || manufacture.equals(exp);
 			}
+            match = match && tempMatch;
 		}
 		assertTrue("getManufacturersList does not match expected list", match);
 		}catch(Exception sql){
@@ -142,7 +160,7 @@ public class ManagerTest{
 		Manager film= new Manager(USERNAME, PASSWORD, URL);
 		film.parseOrder("Mesh", "Chair", 1);
 		film.reset();
-		assertTrue("Reset did not correctly reset", getOrderParts().size()==0);
+		assertTrue("Reset did not correctly reset", film.getOrderedParts().size()==0);
 		}catch(Exception sql){
 			System.err.println("unexpected error");
 		}
