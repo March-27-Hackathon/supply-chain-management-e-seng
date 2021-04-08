@@ -27,6 +27,7 @@ public class Manager{
     private ArrayList<String> orderedParts;
     private int extraParts[];
     private int totalPrice;
+    private int orderCount;
 
     private String dbUsername;
     private String dbPassword;
@@ -66,6 +67,7 @@ public class Manager{
         orderedParts.clear();
         extraParts = null;
         totalPrice = 0;
+        orderCount = 0;
     }
 
 
@@ -253,6 +255,8 @@ public class Manager{
                 // minimize the average price across multiple parts an item has
                 // ie. most parts for the price
                 for(int j = START_PADDING; j < focusItem.length - END_PADDING; j++){
+                    // DEBUG
+                    // System.out.println("Conditions: " + focusItem[ID_INDEX] + ": " + focusItem[j] + " " + extraParts[j-START_PADDING]);
                     if(focusItem[j].equals(FLAG_NOT_HAS) || extraParts[j-START_PADDING] > 0){
                         continue;
                     }
@@ -295,6 +299,22 @@ public class Manager{
                 // System.out.println(item[ID_INDEX] + " " + i + " " + hasPart[i-START_PADDING]);
             }
 
+            // If there is only up to one order remaining, try to minimize the
+            // number of extra parts.
+            if(orderCount <= 1){
+                String[] parts = isolateParts(lowestItem);
+                // Determine if there are extra parts left over from this combination
+                for(int j = 0; j < parts.length; j++){
+                    String partAvailable = parts[j];
+                    // System.out.println(partAvailable);
+                    if(partAvailable.equals(FLAG_NOT_HAS)){
+                        continue;
+                    }
+
+                    extraParts[j]++;
+                }
+            }
+
             foundCheapest = true;
             for(boolean partCheck : hasPart){
                 foundCheapest = foundCheapest && partCheck;
@@ -310,15 +330,17 @@ public class Manager{
             String[] parts = isolateParts(item);
 
             // Determine if there are extra parts left over from this combination
+            // This will ensure the next item does not reorder extra parts
             for(int j = 0; j < parts.length; j++){
                 String partAvailable = parts[j];
+                // DEBUG
                 // System.out.println(partAvailable);
                 if(partAvailable.equals(FLAG_NOT_HAS)){
                     continue;
                 }
 
                 extraParts[j]++;
-            }
+            }//*/
         }
 
         // Remove one full item from the pile of parts.
@@ -328,10 +350,12 @@ public class Manager{
             // System.out.println("COUNT: " + index + " " + extraParts[index]);
         }
 
-        /*/ DEBUG
+        // DEBUG
+        /*/
         for(String id: lowestIDs){
-            System.out.println(id);
+            System.out.println("LOWEST IDs: " + id);
         }//*/
+        orderCount--;
 
         return lowestIDs;
     }
@@ -515,8 +539,10 @@ public class Manager{
             System.exit(1);
         }
 
+        this.orderCount = quantity;
+
         // Find all necessary parts to complete the order
-        while(quantity > 0){
+        while(orderCount > 0){
             String orderCombination[] = findCheapestItems(itemType, itemCategory);
 
             // If there are too few parts to complete an order, exit.
@@ -528,7 +554,8 @@ public class Manager{
                 orderedParts.add(partID);
             }
 
-            quantity--;
+            // quantity--;
+            // orderCount is reduced by one in findCheapestItems
         }
 
         String finalParts[] = orderedParts.toArray(new String[orderedParts.size()]);

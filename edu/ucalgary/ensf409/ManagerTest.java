@@ -45,6 +45,7 @@ public class ManagerTest{
 		});
 		}catch(Exception Ex){
 			System.out.println("Unknown Exception");
+            fail("Unwanted exception thrown");
 		}
 	}
 	@Test
@@ -57,6 +58,7 @@ public class ManagerTest{
 		assertTrue("parseOrder returned incorrect value", Dan.parseOrder("mesh","chair", 1)==150);
 		}catch(Exception we){
 			System.err.println("Unexpected error");
+            fail("Unwanted exception thrown");
 		}
 	}
 	@Test 
@@ -70,6 +72,7 @@ public class ManagerTest{
 		assertTrue("expected -2", down==-2);
 		}catch(Exception re){
 			System.err.println("Unexpected error");
+            fail("Unwanted exception thrown");
 		}
 	}
 	@Test 
@@ -105,14 +108,36 @@ public class ManagerTest{
      * This will check if two traditional desks can be ordered, where the
      * cheapest combination will be $200 and 3 parts will be ordered.
      */
-    public void TestComplexOrder(){
+    public void TestComplexOrderCombination(){
         try{
             Manager Dan = new Manager(USERNAME, PASSWORD, URL);
             double price = Dan.parseOrder("traditional", "desk", 2);
             int itemCount = Dan.getOrderedParts().size();
-            assertTrue("Complex orders not handled properly", price==200 && itemCount == 3);
+            assertTrue("Combinational orders not handled properly", price==200 && itemCount == 3);
         }catch(Exception e){
             System.out.println("Unwanted unexpected error");
+            fail("Unwanted exception thrown");
+        }
+    }
+    @Test
+    /**
+     * Test checking slightly more complicated order combinations.
+     * This will see if the Manager can successfully order the cheapest
+     * parts for 1 ergonomic chair, as the most valuable part (C5409)
+     * still has an average price per part that is higher than other items.
+     *
+     * For this, Manager needs to minimize the number of extra parts it orders
+     * when completing the order.
+     */
+    public void TestComplexOrderLargeAverage(){
+        try{
+            Manager Dan = new Manager(USERNAME, PASSWORD, URL);
+            double price = Dan.parseOrder("ergonomic", "chair", 1);
+            int itemCount = Dan.getOrderedParts().size();
+            assertTrue("Orders do not have minimal left-over parts", price == 250 && itemCount == 2);
+        }catch(Exception e){
+            System.out.println("Unwanted unexpected error");
+            fail("Unwanted exception thrown");
         }
     }
 	@Test
@@ -135,6 +160,7 @@ public class ManagerTest{
 		assertTrue("getManufacturersList does not match expected list", match);
 		}catch(Exception sql){
 			System.err.println("unexpected error");
+            fail("Unwanted exception thrown");
 		}
 		
 	}
