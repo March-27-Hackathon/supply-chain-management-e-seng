@@ -113,7 +113,6 @@ public class ManagerTest{
             assertTrue("Complex orders not handled properly", price==200 && itemCount == 3);
         }catch(Exception e){
             System.out.println("Unwanted unexpected error");
-            e.printStackTrace();
         }
     }
 	@Test
@@ -126,10 +125,12 @@ public class ManagerTest{
 		String [] result = film.getManufacturersList("Chair");
 		String [] expected={"Office Furnishings", "Chairs R Us", "Furniture Goods", "Fine Office Supplies"};
 		boolean match = true;
-		for(int i=0; i<expected.length;i++){
-			if(!result[i].equals(expected[i])){
-				match=false;
+		for(String exp : expected){
+            boolean tempMatch = false;
+            for(String manufacture : result){
+			    tempMatch = tempMatch || manufacture.equals(exp);
 			}
+            match = match && tempMatch;
 		}
 		assertTrue("getManufacturersList does not match expected list", match);
 		}catch(Exception sql){
