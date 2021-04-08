@@ -90,7 +90,7 @@ Order cannot be fulfilled based on current inventory
 Suggested manufacturers are Office Furnishings, Fine Office Supplies, Chairs R Us, and Furniture Goods
 ```
 
-## TESTING:
+## Testing
 ### SQLAccess Testing
 Tests the SQLAccess class and sees if the class has proper access to the database.
 - Before running the tests, modify the USERNAME, PASSWORD, and DBURL variables to ensure that it connects to the right data base.
