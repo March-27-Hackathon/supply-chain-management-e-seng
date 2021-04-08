@@ -18,7 +18,7 @@ import java.io.*;
 	
 	/**
 	Default Constructor, propmts the user for the data base credentials first and foremost
-	if those are invalid, the program ends, else it begins asking the user for their desired
+	if those are invalid, the program asks again, else it begins asking the user for their desired
 	furniture order, if the user inputs invalid furniture types or negative quantites the program
 	will ask the user again for that data until it is able to proceed with it
 	calls both initalizeManage() and confirm()
