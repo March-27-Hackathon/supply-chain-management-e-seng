@@ -14,6 +14,7 @@ import java.io.*;
  public class UserIO{
 	private String request;
 	private Manager manage;
+    private String formattedRequest;
 	
 	/**
 	Default Constructor, propmts the user for the data base credentials first and foremost
@@ -122,8 +123,11 @@ import java.io.*;
 		 code+=items[0].charAt(0);
 		 code+=items[1].charAt(0);
 		 code+=quantity;
+         this.formattedRequest = new String(this.request);
 		 this.request+=" ";
+         this.formattedRequest += ", ";
 		 this.request+=quantity;
+         this.formattedRequest += quantity;
 		 this.manage.setFileName(code);
 		 this.confirm(hold);
 		 try{
@@ -180,7 +184,7 @@ import java.io.*;
 		 response=response.trim();
 		 if(response.equalsIgnoreCase("y")){
 			 try{
-			 this.manage.confirmOrder(this.request);
+			 this.manage.confirmOrder(this.formattedRequest);
 			 }catch(SQLException ekc){
 				 System.out.println("Error saving data base");
 				 ekc.printStackTrace();
