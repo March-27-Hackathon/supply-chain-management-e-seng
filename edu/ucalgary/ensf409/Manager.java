@@ -46,7 +46,7 @@ public class Manager{
      * Getters
      */
     public ArrayList<String> getOrderedParts(){
-        return this.orderedParts();
+        return this.orderedParts;
     }
 
 
