@@ -54,7 +54,9 @@ public class FileIOTest {
                 match = false;
             }
         }
-
+		
+		origScan.close();
+		writScan.close();
         assertTrue ("Files do not match", match);
     }
 	@Test
@@ -77,7 +79,7 @@ public class FileIOTest {
 	
 	@Test
 	/**
-	Simple test to check FileIO's response to null input
+	Simple test to check FileIO's response to null input, an exception should be thrown
 	*/
 	public void TestNullFileName(){
 		assertThrows(NullPointerException.class,()->{
@@ -86,7 +88,7 @@ public class FileIOTest {
 	}
 	@Test
 	/**
-	Simple test to check write() response to null String
+	Simple test to check write() response to null String, it should still create a file, it'll simply be null
 	*/
 	public void TestNullWrite(){
 		FileIO test = new FileIO("dl2");
@@ -110,6 +112,9 @@ public class FileIOTest {
 	}
 	
 	@After
+	/**
+	Simple function to delete files after use
+	*/
 	public void Destruct(){
 		File out1= new File(this.file1);
 		File out2= new File(this.file2);
