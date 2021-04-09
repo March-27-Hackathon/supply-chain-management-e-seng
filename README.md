@@ -96,13 +96,14 @@ Tests the SQLAccess class and sees if the class has proper access to the databas
 - Before running the tests, modify the USERNAME, PASSWORD, and DBURL variables to ensure that it connects to the right data base.
 - The provided inventory.sql file should be uploaded before each run.
 - Values in tests are hard coded to match the provided data base, though the class itself is very flexible.
-- If you want to avoid this, comment out the removeFurnitureExists () test case and you will on ly need to load the .sql file once. This is because this test case removes a specific instance in the table and the test will fail if the instance no longer exists.
+- If you want to avoid this, comment out the removeFurnitureExists () test case and you will only need to load the .sql file once. This is because this test case removes a specific instance in the table and the test will fail if the instance no longer exists.
+- Hard coded values can easily be changed to accomodate a different test database.
 ### FileIO Testing
 Tests the FileIO class with a simple functionality test of the only two functions, as  well as tests passing null and blank data to both
 - No special actions need to be done for testing this class.
 ### Manager Testing
 Test the manager class, has broad reaching tests ranging from simple functionality tests to complex but valid data input and bad data input tests for different methods
-- Before running the tests, modify the USERNAME, PASSWORD AND DBURL vairables to ensure that it connects to the correct database.
+- Before running the tests, modify the USERNAME, PASSWORD and DBURL vairables to ensure that it connects to the correct database.
 
 *Note: There are no test cases to be used for UserIO, as it only handles standard input and the user interface.
 All methods that handle input checking are found within Manager, which are tested with Manager tests.*
